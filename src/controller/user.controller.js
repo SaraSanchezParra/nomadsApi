@@ -16,14 +16,15 @@ function getUser(request,response){
     console.log(request.query);
 
     params= [user_id]
-    sql = `SELECT username, name, surname, descripcion, foto FROM user WHERE user_id = ?` ;
+    sql = `SELECT username, name, surname, descripcion, photo FROM user WHERE user_id = ?` ;
     
    
     
     connection.query(sql,params,(err,res)=>{
       
         if(res.length > 0){
-          respuesta = {error:false, codigo:200, mensaje:'Usuario encontrado', data:res}
+          // respuesta = {error:false, codigo:200, mensaje:'Usuario encontrado', data:res}
+          respuesta = res[0]
         } else {
           console.log('Los datos proporcionados no coinciden con ningún usuario en la base de datos.')
           respuesta = {error:true, codigo:200, mensaje:'No encontrado', data:res}
