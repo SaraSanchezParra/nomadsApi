@@ -2,10 +2,10 @@ const connection = require("../database")
 
 
 function getRegister(request,response){
-  // let sql;
-  // if (request.query.id_user == null) 
- let sql = "SELECT * FROM user";
-  // else sql = "SELECT username,name,surname,email,password FROM user WHERE id_user = " + request.query.id_user;
+  let sql;
+  if (request.query.user_id == null) 
+  sql = "SELECT * FROM user";
+  else sql = "SELECT username,name,surname,email,password FROM user WHERE user_id = " + request.query.user_id;
 
   connection.query(sql, function (err, result) {
     console.log("se ha buscado");
@@ -24,12 +24,13 @@ function postRegister(request,response)
   console.log(request.body);
 
 
-  let sql = "INSERT INTO user (username,name,surname,email,descripcion,password,foto)" + 
+  let sql = "INSERT INTO user (username,name,surname,email,descripcion,password,photo)" + 
   "VAlUES ('" + request.body.username + "','"+ 
                 request.body.name + "', '" +
                 request.body.surname + "', '" +  
                 request.body.email + "','', '" + 
-                request.body.password + "','')"
+                request.body.password + "','" + 
+                request.body.photo + "')"
   console.log(sql);
   connection.query(sql,function(err,res)
   {
@@ -41,7 +42,7 @@ function postRegister(request,response)
       console.log(err);
       respuesta = {error:false, codigo:200, mensaje:'registrado', data_user:res}
     }
-    response.send(respuesta)
+    response.json(respuesta)
   })             
 }
 
