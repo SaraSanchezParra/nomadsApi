@@ -43,7 +43,7 @@ function getViajesLog(request, response) {
 function getTopNomads(request, response) {
 
     let respuesta;
-    let sql= "SELECT user.foto, COUNT(*) AS likes FROM favoritos JOIN viajes ON viajes.viaje_id = favoritos.viaje_id_fav JOIN user ON user.user_id = viajes.user_id  GROUP BY user.user_id, user.foto ORDER BY likes DESC LIMIT 4";
+    let sql= "SELECT user.photo, COUNT(*) AS likes FROM favoritos JOIN viajes ON viajes.viaje_id = favoritos.viaje_id_fav JOIN user ON user.user_id = viajes.user_id_propietario GROUP BY user.user_id, user.photo ORDER BY likes DESC LIMIT 4";
 
     connection.query(sql, function (err, result) {
         if (err) {
