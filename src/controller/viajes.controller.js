@@ -3,7 +3,7 @@ const connection = require("../database");
 function getViajes(request, response) {
 
     let respuesta;
-    let sql= "SELECT viaje_id, COUNT(*) AS likes FROM favoritos GROUP BY viaje_id ORDER BY likes DESC LIMIT 3";
+    let sql= "SELECT viajes.titulo, viajes.descripcion, viajes.foto, COUNT(*) AS likes FROM favoritos JOIN viajes ON viajes.viaje_id = favoritos.viaje_id GROUP BY viajes.viaje_id ORDER BY likes DESC LIMIT 3";
 
     connection.query(sql, function (err, result) {
         if (err) {
@@ -11,7 +11,7 @@ function getViajes(request, response) {
             respuesta = { error: true, codigo: 200, mensaje: 'No encontrado', data: null, userdata: null }
         } else {
             console.log(result);
-            respuesta = { result }
+            respuesta = result ;
         }
         response.send(respuesta)
     })
@@ -19,3 +19,4 @@ function getViajes(request, response) {
 
 
 module.exports = {getViajes}
+
