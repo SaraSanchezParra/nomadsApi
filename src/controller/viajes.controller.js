@@ -3,6 +3,7 @@ const connection = require('../database');
 
 function getStartViajes(req, res) {
     let answer = {error: false, codigo: 200, mensaje: 'Starting Point', data_viaje: null }
+
     res.send(answer)
 }
 
@@ -62,3 +63,27 @@ module.exports = {getStartViajes, getDiasOfViaje, getPIOfDay}
 
 
 // "SELECT * FROM nomads.viajes as v join dias as d on (v.viaje_id = d.viaje_id) join puntos_de_interes as p on (d.dia_id = p.dia_id) where v.viaje_id = 1;"
+=======
+}
+
+
+function getViajes(request, response) {
+
+    let respuesta;
+    let sql= "SELECT viajes.titulo, viajes.descripcion, viajes.foto, COUNT(*) AS likes FROM favoritos JOIN viajes ON viajes.viaje_id = favoritos.viaje_id GROUP BY viajes.viaje_id ORDER BY likes DESC LIMIT 3";
+
+    connection.query(sql, function (err, result) {
+        if (err) {
+            console.log(err);
+            respuesta = { error: true, codigo: 200, mensaje: 'No encontrado', data: null, userdata: null }
+        } else {
+            console.log(result);
+            respuesta = result ;
+        }
+        response.send(respuesta)
+    })
+}
+
+
+module.exports = {getViajes, getStartViajes}
+
