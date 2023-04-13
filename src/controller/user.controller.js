@@ -16,7 +16,7 @@ function getUser(request,response){
     console.log(request.query);
 
     params= [user_id]
-    sql = `SELECT username, name, surname, descripcion, photo FROM user WHERE user_id = ?` ;
+    sql = `SELECT  username, name, surname, email, descripcion, photo FROM user WHERE user_id = ?` ;
     
    
     
