@@ -6,7 +6,7 @@ function getStartViajes(req, res) {
 }
 
 
-function getViajes(request, response) {
+function getTopViajes(request, response) {
 
     let respuesta;
     let sql= "SELECT viajes.titulo, viajes.descripcion, viajes.foto, COUNT(*) AS likes FROM favoritos JOIN viajes ON viajes.viaje_id = favoritos.viaje_id_fav GROUP BY viajes.viaje_id ORDER BY likes DESC LIMIT 3";
@@ -23,7 +23,7 @@ function getViajes(request, response) {
     })
 }
 
-function getViajesLog(request, response) {
+function getTopViajesLog(request, response) {
 
     let respuesta;
     let sql= "SELECT viajes.titulo, viajes.descripcion, viajes.foto, COUNT(*) AS likes FROM favoritos JOIN viajes ON viajes.viaje_id = favoritos.viaje_id_fav GROUP BY viajes.viaje_id ORDER BY likes DESC LIMIT 4";
@@ -43,7 +43,7 @@ function getViajesLog(request, response) {
 function getTopNomads(request, response) {
 
     let respuesta;
-    let sql= "SELECT user.photo, COUNT(*) AS likes FROM favoritos JOIN viajes ON viajes.viaje_id = favoritos.viaje_id_fav JOIN user ON user.user_id = viajes.user_id_propietario GROUP BY user.user_id, user.photo ORDER BY likes DESC LIMIT 4";
+    let sql= "SELECT user.photo, user.username, COUNT(*) AS likes FROM favoritos JOIN viajes ON viajes.viaje_id = favoritos.viaje_id_fav JOIN user ON user.user_id = viajes.user_id_propietario GROUP BY user.user_id, user.photo ORDER BY likes DESC LIMIT 4";
 
     connection.query(sql, function (err, result) {
         if (err) {
@@ -58,5 +58,5 @@ function getTopNomads(request, response) {
 }
 
 
-module.exports = {getViajes, getStartViajes, getViajesLog, getTopNomads}
+module.exports = {getTopViajes, getStartViajes, getTopViajesLog, getTopNomads}
 
