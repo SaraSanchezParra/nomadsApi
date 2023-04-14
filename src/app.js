@@ -1,7 +1,7 @@
 const express = require("express")
 const cors = require ("cors")
 const userRouters = require ("./routers/user.routers")
-const viajeRouters = require ("./routers/viajes.routers.js")
+const viajeRouters = require (".")
 const errorHandling = require("./error/errorHandling")
 
 const app = express();
