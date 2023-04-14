@@ -9,6 +9,6 @@ router.get("/viaje", viajesCTRL.getDiasOfViaje)
 
 router.get("/getPI", viajesCTRL.getPIOfDay)
 
-router.get("/viajes", userCtrl.getViajes);
+router.get("/viajes", viajesCTRL.getViajes);
 
 module.exports = router
