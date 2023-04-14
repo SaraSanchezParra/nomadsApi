@@ -5,15 +5,13 @@ function postUserLoging(request, response) {
 
   console.log(request.body);
 
-  let email = request.body.email;
-  console.log(email);
+  let username = request.body.username;
   let password = request.body.password;
-  console.log(password);
 
-  let params = [email, password];
+  let params = [username, password];
   console.log(params);
 
-  let sql = `SELECT * FROM nomads.user WHERE email = ? AND password = ?`;
+  let sql = `SELECT * FROM nomads.user WHERE username = ? AND password = ?`;
 
   let sql2 = `SELECT titulo,viajes.descripcion,foto FROM nomads.viajes
               JOIN nomads.user ON(viajes.user_id_propietario=user.user_id)
