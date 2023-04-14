@@ -9,11 +9,11 @@ function getStartViajes(req, res) {
 
 function getDiasOfViaje(req, response) {
     let answer;
-    // let viaje_id = req.query.viaje_id;
-    // let params = [viaje_id]
-    let sql = "SELECT * FROM nomads.viajes as v join dias as d on (v.viaje_id = d.viaje_id) where v.viaje_id = 1;"
+    let viaje_id = req.query.viaje_id;
+    let params = [viaje_id]
+    let sql = "SELECT v.viaje_id, v.titulo, v.ubicacion, v.foto, d.nombre, d.dia_id, u.photo FROM nomads.viajes as v join dias as d on (v.viaje_id = d.viaje_id) join user as u on (v.user_id_propietario = u.user_id) where v.viaje_id = ?;"
     console.log(req.query);
-    connection.query(sql, (err, res) => {
+    connection.query(sql, params, (err, res) => {
         if (err) {
             answer = {error: true, codigo: 200, mensaje: err, data_viaje: [null]}
         }
@@ -22,12 +22,10 @@ function getDiasOfViaje(req, response) {
             // create viaje
             let datos = res[0]
             let excursion = {
-                        "viaje_id": datos.viaje_id,
                         "titulo": datos.titulo,
-                        "descripcion": datos.descripcion,
                         "ubicacion": datos.ubicacion,
                         "foto": datos.foto,
-                        "user_id": datos.user_id_propietario,
+                        "user_photo": datos.photo,
                         "days": []
             }
 
@@ -60,12 +58,7 @@ function getPIOfDay(req, response) {
     })
 }
 
-
-
-
 // "SELECT * FROM nomads.viajes as v join dias as d on (v.viaje_id = d.viaje_id) join puntos_de_interes as p on (d.dia_id = p.dia_id) where v.viaje_id = 1;"
-
-
 
 function getViajeDestino(request, response)
 {
@@ -106,6 +99,61 @@ function getViajes(request, response) {
     })
 }
 
-module.exports = {getStartViajes, getDiasOfViaje, getPIOfDay, getViajes}
+function postViaje(req, response) {
+    let sql = "INSERT INTO nomads.viajes (titulo, descripcion, ubicacion, foto, user_id_propietario, n_dias_viaje, n_likes)" + "VALUES ('" 
+                        + req.body.titulo + 
+                "', '" + req.body.descripcion 
+                +  "', '" + req.body.ubicacion 
+                +  "', '" + req.body.foto 
+                +  "', '" + req.body.user_id 
+                +  "', '" + req.body.n_dias_viaje 
+                +  "', '" + 0 + "');";
+        
+    let answer;
+    connection.query(sql, (err, res) => {
+        console.log(sql);
+        if (err) {
+            answer = { error: true, codigo: 200, mensaje: 'No encontrado', data: null, userdata: null }
+        }
+        else {
+            if (res.insertId) {
+                answer = { error: true, codigo: 200, mensaje: String(res.insertId), data_viaje: null }
+            }
+            else {
+                answer = {error: true, code: 200, message: "-1", data_viaje:[null]}
+            }
+        }
+        response.send(answer)
+    })
+}
+
+function putViaje(req, response) {
+    let params = [req.body.titulo,
+                            req.body.descripcion,
+                            req.body.ubicacion,
+                            req.body.foto,
+                            req.body.n_dias_viaje,
+                            req.body.viaje_id]
+    let sql = "UPDATE nomads.viajes SET titulo = COALESCE(?, titulo), descripcion = COALESCE(?, descripcion), ubicacion = COALESCE(?, ubicacion), foto = COALESCE(?, foto), n_dias_viaje = COALESCE(?, n_dias_viaje)' WHERE (viaje_id = ?);";
+    let answer;
+    connection.query(sql, params, (err, res) => {
+        if (err) {
+            answer =  {error: true, code: 200, message: "wrong db connection", data: res};
+            console.log(err);
+        }
+        else {
+            if (res.affectedRows) {
+                answer = { error: true, codigo: 200, mensaje: String(res.affectedRows), data_viaje: null }
+            }
+            else {
+                answer = {error: true, code: 200, message: "0", data_viaje:[null]}
+            }
+        }
+        response.send(answer)
+        // in front, succesful edit is when message === "1", and failed edit is message === "0"
+    })
+}
+
+module.exports = {getStartViajes, getDiasOfViaje, getPIOfDay, getViajes, postViaje, putViaje}
 
 
