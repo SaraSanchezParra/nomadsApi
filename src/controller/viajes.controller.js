@@ -60,17 +60,12 @@ function getPIOfDay(req, response) {
 
 // "SELECT * FROM nomads.viajes as v join dias as d on (v.viaje_id = d.viaje_id) join puntos_de_interes as p on (d.dia_id = p.dia_id) where v.viaje_id = 1;"
 
-<<<<<<< HEAD
-
-
-=======
 function getViajeDestino(request, response)
 {
     
     let sql;
     // if(request.query.ubicacion != null)
     sql = " SELECT * FROM viajes JOIN dias ON (viajes.viaje_id = dias.viaje_id WHERE ubicacion = 'Madrid"
->>>>>>> addViajeA
 
 function getTopViajes(request, response) {
 
