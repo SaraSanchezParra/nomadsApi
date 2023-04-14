@@ -89,13 +89,6 @@ function getViajeDestino(request, response)
        })
 }
 
-
-
-module.exports ={getViajeDestino, getStartViajes}
-
-
-
-
 function getViajes(request, response) {
 
     let respuesta;
