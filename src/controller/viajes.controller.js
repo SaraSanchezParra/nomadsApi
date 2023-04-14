@@ -38,7 +38,7 @@ function getDiasOfViaje(req, response) {
             })
             console.log(excursion);
 
-            answer = {error: false, codigo: 200, mensaje: "Viaje encontrado", data_viaje: []}
+            answer = {error: false, codigo: 200, mensaje: "Viaje encontrado", data_viaje: [excursion]}
 
         }
         response.send(answer)
@@ -48,7 +48,7 @@ function getDiasOfViaje(req, response) {
 function getPIOfDay(req, response) {
     let answer;
     let params = [req.query.dia_id]
-    let sql = "SELECT p.nombre, p.foto, p.coordinates FROM nomads.dias as d join puntos_de_interes as p on (d.dia_id = p.dia_id) where d.dia_id = ?;";
+    let sql = "SELECT p.nombre, p.foto, p.corLong, p.corLat FROM nomads.dias as d join puntos_de_interes as p on (d.dia_id = p.dia_id) where d.dia_id = ?;";
     connection.query(sql, params, (err,res) => {
         if (err) {
             answer = {error: true, codigo: 200, mensaje: err, data_viaje: [null]}
