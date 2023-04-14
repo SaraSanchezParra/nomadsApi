@@ -117,10 +117,10 @@ function viajes(request, response) {
     connection.query(sql,params, function(err, result){
         if(err){
             console.log(err);
-            respuesta = { error: true, codigo: 200, mensaje: 'No encontrado', data: null, data_viaje: null }
+            respuesta = { error: true, codigo: 200, mensaje: 'No encontrado', data_viaje: null }
         } else {
             console.log(result);
-            respuesta = { error: true, codigo: 200, mensaje: 'No encontrado', data: null, data_viaje: result }
+            respuesta = { error: false, codigo: 200, mensaje: 'Encontrado',  data_viaje: result }
         }
         response.send(respuesta)
     })
