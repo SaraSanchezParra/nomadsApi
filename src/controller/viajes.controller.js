@@ -53,8 +53,9 @@ function getPIOfDay(req, response) {
             answer = {error: true, codigo: 200, mensaje: err, data_viaje: [null]}
         }
         else {
-            console.log(res);
+            answer = {error: true, codigo: 200, mensaje: err, data_dia: res}
         }
+        response.send(answer)
     })
 }
 
