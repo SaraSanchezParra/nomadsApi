@@ -65,7 +65,7 @@ function getViajeDestino(request, response) {
     let sql;
     // if(request.query.ubicacion != null)
     sql = " SELECT * FROM viajes JOIN dias ON (viajes.viaje_id = dias.viaje_id WHERE ubicacion = 'Madrid"
-
+}
 function getTopViajes(request, response) {
 
     let respuesta;
@@ -82,7 +82,7 @@ function getTopViajes(request, response) {
         response.send(respuesta)
     })
 }
-}
+
 
 function getTopViajesLog(request, response) {
 
@@ -157,8 +157,6 @@ function putViaje(req, response) {
     })
 }
 
-module.exports = {getStartViajes, getDiasOfViaje, getPIOfDay, getViajes, postViaje, putViaje}
-
 
 // VIAJES POR DESTINO Y DIAS----------------------------------------
 function viajes(request, response) {
@@ -199,5 +197,5 @@ function getTopNomads(request, response) {
 }
 
 
-module.exports = {getTopViajes, getStartViajes, getTopViajesLog, getTopNomads,  getDiasOfViaje, getPIOfDay, viajes}
+module.exports = {getTopViajes, getStartViajes, getTopViajesLog, getTopNomads, getDiasOfViaje, getPIOfDay, viajes, postViaje, putViaje}
 
