@@ -1,10 +1,15 @@
-const {Router} = require ("express")
+
+const {Router} = require('express');
 const router = Router();
-const userCtrl = require("../controller/viajes.controller")
+const viajesCTRL = require('../controller/viajes.controller');
+
+router.get("/", viajesCTRL.getStartViajes)
+
+router.get("/topViajes", viajesCTRL.getTopViajes);
+router.get("/topViajesLog", viajesCTRL.getTopViajesLog);
+router.get("/topNomads", viajesCTRL.getTopNomads);
+router.get("/viaje", viajesCTRL.getDiasOfViaje)
+router.get("/getPI", viajesCTRL.getPIOfDay)
 
 
-router.get("/topViajes", userCtrl.getTopViajes);
-router.get("/topViajesLog", userCtrl.getTopViajesLog);
-router.get("/topNomads", userCtrl.getTopNomads);
-
-module.exports = router;
+module.exports = router
