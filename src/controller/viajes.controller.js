@@ -71,7 +71,7 @@ function getPIOfDay(req, response) {
 function getTopViajes(request, response) {
 
     let respuesta;
-    let sql= "SELECT viajes.titulo, viajes.descripcion, viajes.foto,user_id_propietario, COUNT(*) AS likes FROM favoritos JOIN viajes ON viajes.viaje_id = favoritos.viaje_id_fav GROUP BY viajes.viaje_id ORDER BY likes DESC LIMIT 3";
+    let sql= "SELECT viajes.titulo, viajes.descripcion, viajes.foto, user_id_propietario, COUNT(*) AS likes FROM favoritos JOIN viajes ON viajes.viaje_id = favoritos.viaje_id_fav GROUP BY viajes.viaje_id ORDER BY likes DESC LIMIT 3";
 
     connection.query(sql, function (err, result) {
         if (err) {
@@ -88,7 +88,7 @@ function getTopViajes(request, response) {
 function getTopViajesLog(request, response) {
 
     let respuesta;
-    let sql= "SELECT viajes.titulo, viajes.descripcion, viajes.foto, COUNT(*) AS likes FROM favoritos JOIN viajes ON viajes.viaje_id = favoritos.viaje_id_fav GROUP BY viajes.viaje_id ORDER BY likes DESC LIMIT 4";
+    let sql= "SELECT viajes.titulo, viajes.descripcion, viajes.foto, user_id_propietario, COUNT(*) AS likes FROM favoritos JOIN viajes ON viajes.viaje_id = favoritos.viaje_id_fav GROUP BY viajes.viaje_id ORDER BY likes DESC LIMIT 4";
 
     connection.query(sql, function (err, result) {
         if (err) {
