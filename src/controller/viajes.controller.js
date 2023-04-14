@@ -140,5 +140,6 @@ function getTopNomads(request, response) {
     })
 }
 
+
 module.exports = {getTopViajes, getStartViajes, getTopViajesLog, getTopNomads,  getDiasOfViaje, getPIOfDay}
 
