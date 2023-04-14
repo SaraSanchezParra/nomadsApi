@@ -60,8 +60,7 @@ function getPIOfDay(req, response) {
 
 // "SELECT * FROM nomads.viajes as v join dias as d on (v.viaje_id = d.viaje_id) join puntos_de_interes as p on (d.dia_id = p.dia_id) where v.viaje_id = 1;"
 
-function getViajeDestino(request, response)
-{
+function getViajeDestino(request, response) {
     
     let sql;
     // if(request.query.ubicacion != null)
@@ -82,6 +81,7 @@ function getTopViajes(request, response) {
         }
         response.send(respuesta)
     })
+}
 }
 
 function getTopViajesLog(request, response) {
