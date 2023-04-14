@@ -67,27 +67,6 @@ function getPIOfDay(req, response) {
 
 
 
-function getViajeDestino(request, response)
-{
-    
-    let sql;
-    // if(request.query.ubicacion != null)
-    sql = " SELECT * FROM viajes JOIN dias ON (viajes.viaje_id = dias.viaje_id WHERE ubicacion = 'Madrid"
-
-    connection.query(sql,function(err, result){
- 
-        if(err){
-            console.log(err);
-       
-        }
-        else{
-          
-            console.log(result);
-           
-        }
-               response.send(result)
-       })
-}
 
 function getTopViajes(request, response) {
 
@@ -118,6 +97,26 @@ function getTopViajesLog(request, response) {
         } else {
             console.log(result);
             respuesta = result ;
+        }}
+    )}
+
+
+// VIAJES POR DESTINO Y DIAS----------------------------------------
+function viajes(request, response) {
+    
+    let respuesta;
+    let params = [request.query.ubicacion, request.query.ndiasViaje]
+    let sql = "SELECT foto, titulo, viajes.descripcion, n_likes, user.photo FROM viajes "  + 
+              "JOIN user ON (viajes.user_id_propietario = user.user_id) WHERE ubicacion = ? AND n_dias_viaje = ? "
+    console.log(sql);
+
+    connection.query(sql,params, function(err, result){
+        if(err){
+            console.log(err);
+            respuesta = { error: true, codigo: 200, mensaje: 'No encontrado', data: null, data_viaje: null }
+        } else {
+            console.log(result);
+            respuesta = { error: true, codigo: 200, mensaje: 'No encontrado', data: null, data_viaje: result }
         }
         response.send(respuesta)
     })
@@ -140,5 +139,5 @@ function getTopNomads(request, response) {
     })
 }
 
-module.exports = {getTopViajes, getStartViajes, getTopViajesLog, getTopNomads,  getDiasOfViaje, getPIOfDay}
+module.exports = {getTopViajes, getStartViajes, getTopViajesLog, getTopNomads,  getDiasOfViaje, getPIOfDay, viajes}
 
