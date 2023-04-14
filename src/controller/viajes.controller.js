@@ -60,12 +60,11 @@ function getPIOfDay(req, response) {
     })
 }
 
-module.exports = {getStartViajes, getDiasOfViaje, getPIOfDay}
+
 
 
 // "SELECT * FROM nomads.viajes as v join dias as d on (v.viaje_id = d.viaje_id) join puntos_de_interes as p on (d.dia_id = p.dia_id) where v.viaje_id = 1;"
-=======
-}
+
 
 
 function getViajes(request, response) {
@@ -85,6 +84,6 @@ function getViajes(request, response) {
     })
 }
 
+module.exports = {getStartViajes, getDiasOfViaje, getPIOfDay, getViajes}
 
-module.exports = {getViajes, getStartViajes}
 
