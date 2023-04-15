@@ -17,9 +17,6 @@ router.get("/getPI", viajesCTRL.getPIOfDay);
 
 router.get("/viajesDestino",viajesCTRL.viajes);
 
-
 router.post("/addViaje", viajesCTRL.postViaje);
-
-router.put("/modifyViaje", viajesCTRL.putViaje)
 
 module.exports = router
