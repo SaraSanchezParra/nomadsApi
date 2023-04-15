@@ -157,6 +157,55 @@ function postViaje(req, response) {
 //     })
 // }
 
+// añadir día y punto interés
+
+
+function postDia(req, response) {
+    let sql = "INSERT INTO nomads.dias (nombre)" + "VALUES ('" 
+                        + req.body.nombre
+                +  "', '" + 0 + "');";
+        
+    let answer;
+    connection.query(sql, (err, res) => {
+        console.log(sql);
+        if (err) {
+            answer = { error: true, codigo: 200, mensaje: 'No encontrado', data: null, userdata: null }
+        }
+        else {
+            if (res.insertId) {
+                answer = { error: true, codigo: 200, mensaje: String(res.insertId), data_viaje: null }
+            }
+            else {
+                answer = {error: true, code: 200, message: "-1", data_viaje:[null]}
+            }
+        }
+        response.send(answer)
+    })
+}
+
+function postPI(req, response) {
+    let sql = "INSERT INTO nomads.puntos_de_interes (nombre, foto)" + "VALUES ('" 
+                        + req.body.nombre + 
+                "', '" + req.body.foto
+                +  "', '" + 0 + "');";
+        
+    let answer;
+    connection.query(sql, (err, res) => {
+        console.log(sql);
+        if (err) {
+            answer = { error: true, codigo: 200, mensaje: 'No añadido', data: null, userdata: null }
+        }
+        else {
+            if (res.insertId) {
+                answer = { error: true, codigo: 200, mensaje: String(res.insertId), data_viaje: null }
+            }
+            else {
+                answer = {error: true, code: 200, message: "-1", data_viaje:[null]}
+            }
+        }
+        response.send(answer)
+    })
+}
 
 // VIAJES POR DESTINO Y DIAS----------------------------------------
 function viajes(request, response) {
@@ -197,5 +246,5 @@ function getTopNomads(request, response) {
 }
 
 
-module.exports = {getTopViajes, getStartViajes, getTopViajesLog, getTopNomads, getDiasOfViaje, getPIOfDay, viajes, postViaje}
+module.exports = {getTopViajes, getStartViajes, getTopViajesLog, getTopNomads, getDiasOfViaje, getPIOfDay, viajes, postViaje, postDia, postPI}
 

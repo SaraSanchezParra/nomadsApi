@@ -19,4 +19,8 @@ router.get("/viajesDestino",viajesCTRL.viajes);
 
 router.post("/addViaje", viajesCTRL.postViaje);
 
+router.post("/addDia", viajesCTRL.postDia);
+
+router.post("/addPI", viajesCTRL.postPI)
+
 module.exports = router
