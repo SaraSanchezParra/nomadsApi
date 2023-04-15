@@ -38,31 +38,27 @@ function getUser(request,response){
   
   function putUser(request, response) {
     let params = [
-      request.body.user_id,
-      request.body.email,
       request.body.name,
       request.body.surname,
-      request.body.photo,
+      request.body.email,
       request.body.descripcion,
-      request.body.password,
-      request.body.password2
+      request.body.photo,
+      request.query.user_id,
     ];
-  
+    console.log(params)
     let sql =
-      'UPDATE user SET username = ?, name = ?, surname = ?, email = ?, descripcion = ?, password = ?, photo = ? WHERE user_id = ?';
+      'UPDATE user SET name = ?, surname = ?, email = ?, descripcion = ?, photo = ? WHERE user_id = ?';
   
     connection.query(sql, params, (err, resp) => {
-      let respuesta;
       if (err) {
         console.log(err);
-        respuesta = {error: true, codigo: 200, mensaje: 'Usuario no actualizado', data_user: resp
-        };
+        let respuesta = {error: true, codigo: 200, mensaje: 'Usuario no actualizado'};
+        response.send(respuesta);
       } else {
-        respuesta = {error: false, codigo: 200, mensaje: 'Usuario actualizado', data_user: resp
-        };
-        console.log(respuesta);
+        let respuesta = {error: false, codigo: 200, mensaje: 'Usuario actualizado'}
+        console.log("Usuario actualizado correctamente.");
+        response.send(respuesta)
       }
-      response.send(respuesta);
     });
   };
   
