@@ -239,8 +239,8 @@ function addLike(req, response) {
 }
 
 function removeLike(req, res) {
-    let params = [req.body.viaje_id]
-    let sql = "DELETE FROM nomads.favoritos WHERE (favorito_id = ?);"
+    let params = [req.body.viaje_id, req.body.user_id]
+    let sql = "DELETE FROM nomads.favoritos WHERE (viaje_id_fav = ?) AND (user_id_fav = ?);"
     connection.query(sql, params, (err, res) => {
         if (err) {
             console.log(err);
