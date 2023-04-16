@@ -2,28 +2,28 @@
 const connection = require("../database");
 
 
-// function getChatsAll(request,response){
+function getChatsAll(request,response){
   
   
-//   let sql = `SELECT photo,username, mensajes.hora FROM nomads.user
-//   JOIN nomads.chats ON(user.user_id=chats.user1)
-//   JOIN nomads.mensajes ON (chats.chat_id=mensajes.chat_id)
-//   ORDER BY mensajes.hora DESC`;
+  let sql = `SELECT photo,username, mensajes.hora FROM nomads.user
+  JOIN nomads.chats ON(user.user_id=chats.user1)
+  JOIN nomads.mensajes ON (chats.chat_id=mensajes.chat_id)
+  ORDER BY mensajes.hora DESC`;
 
-//   connection.query(sql, function (err, result) {
-//     console.log("Estos son tus chats");
-//     if(err) {
-//       console.log(err);
-//     respuesta ={error:true, codigo:200, mensaje:'no se encuentran tus chats', data:result} 
-//     } 
+  connection.query(sql, function (err, result) {
+    console.log("Estos son tus chats");
+    if(err) {
+      console.log(err);
+    respuesta ={error:true, codigo:200, mensaje:'no se encuentran tus chats', data:result} 
+    } 
    
-//     else {
+    else {
       
-//       respuesta = {error:true, codigo:200, mensaje:'todos tus chats', data:result}
-//     }
-//     response.send(respuesta)
-//   });
-// }
+      respuesta = {error:true, codigo:200, mensaje:'todos tus chats', data:result}
+    }
+    response.send(respuesta)
+  });
+}
 
 
 function getChat(request,response){
@@ -87,4 +87,4 @@ function getChat(request,response){
 
 // };
 
-module.exports={getChat}
+module.exports={getChatsAll,getChat}
