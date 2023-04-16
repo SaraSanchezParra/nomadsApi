@@ -160,52 +160,38 @@ function postViaje(req, response) {
 // añadir día y punto interés
 
 
-function postDia(req, response) {
-    let sql = "INSERT INTO nomads.dias (nombre)" + "VALUES ('" 
-                        + req.body.nombre
-                +  "', '" + 0 + "');";
-        
-    let answer;
-    connection.query(sql, (err, res) => {
-        console.log(sql);
-        if (err) {
-            answer = { error: true, codigo: 200, mensaje: 'No encontrado', data: null, userdata: null }
-        }
-        else {
-            if (res.insertId) {
-                answer = { error: true, codigo: 200, mensaje: String(res.insertId), data_viaje: null }
-            }
-            else {
-                answer = {error: true, code: 200, message: "-1", data_viaje:[null]}
-            }
-        }
-        response.send(answer)
-    })
-}
+function postDia(req, res) {
+    const sql = "INSERT INTO nomads.dias (nombre, viaje_id) VALUES (?, ?)";
+    const values = [req.body.nombre, req.body.viaje_id];
+    
+    connection.query(sql, values, (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ error: true, codigo: 500, mensaje: 'Error al insertar día en la base de datos' });
+      } else {
+        res.status(201).json({ error: false, codigo: 201, mensaje: 'Día insertado correctamente', data: { id: result.insertId } });
+      }
+    });
+  }
+  
+  
 
-function postPI(req, response) {
-    let sql = "INSERT INTO nomads.puntos_de_interes (nombre, foto)" + "VALUES ('" 
-                        + req.body.nombre + 
-                "', '" + req.body.foto
-                +  "', '" + 0 + "');";
-        
-    let answer;
-    connection.query(sql, (err, res) => {
-        console.log(sql);
-        if (err) {
-            answer = { error: true, codigo: 200, mensaje: 'No añadido', data: null, userdata: null }
-        }
-        else {
-            if (res.insertId) {
-                answer = { error: true, codigo: 200, mensaje: String(res.insertId), data_viaje: null }
-            }
-            else {
-                answer = {error: true, code: 200, message: "-1", data_viaje:[null]}
-            }
-        }
-        response.send(answer)
-    })
-}
+  function postPI(req, res) {
+    const sql = "INSERT INTO nomads.puntos_de_interes (nombre, foto, dia_id, corLong, corLat) VALUES (?, ?, ?, ?, ?)";
+    const values = [req.body.nombre, req.body.foto, req.body.dia_id, req.body.corLong, req.body.corLat];
+  
+    connection.query(sql, values, (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ error: true, codigo: 500, mensaje: 'Error al añadir punto de interés a la base de datos' });
+      } else {
+        res.status(201).json({ error: false, codigo: 201, mensaje: 'Punto de interés añadido correctamente', data: { id: result.insertId } });
+      }
+    });
+  }
+  
+  
+  
 
 // VIAJES POR DESTINO Y DIAS----------------------------------------
 function viajes(request, response) {
