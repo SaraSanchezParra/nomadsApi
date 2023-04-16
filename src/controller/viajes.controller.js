@@ -21,13 +21,14 @@ function getDiasOfViaje(req, response) {
             
             // create viaje
             let datos = res[0]
-            let excursion = {
-                        "titulo": datos.titulo,
-                        "ubicacion": datos.ubicacion,
-                        "foto": datos.foto,
-                        "user_photo": datos.photo,
-                        "days": []
-            }
+            let excursion = new Viaje(datos.viaje_id,
+                                                    datos.titulo,
+                                                    datos.descripcion,
+                                                    datos.ubicacion,
+                                                    datos.foto,
+                                                    [],
+                                                    0,
+                                                    0)
 
             // create days 
 
@@ -36,6 +37,34 @@ function getDiasOfViaje(req, response) {
             })
             console.log(excursion);
 
+            //  get likes
+
+            let sqlLikes = `SELECT count(*) as likes FROM nomads.favoritos where viaje_id_fav = ${datos.viaje_id} group by viaje_id_fav;`
+            console.log(sqlLikes);
+            let nLikes;
+            connection.query(sqlLikes, (err, res) => {
+                if (err) {
+                    answer = {error: true, codigo: 200, mensaje: "likes not gotten", data_viaje: [null]}
+                }
+                else {
+                    console.log(res[0].likes);
+                    nLikes = res[0].likes
+                    excursion.likes = Number(nLikes)
+                }
+            })
+
+            //  get user foto
+
+            let sqlU = `SELECT u.photo FROM nomads.viajes as v join user as u on (v.user_id_propietario = u.user_id) where v.viaje_id = ${datos.viaje_id};`
+            connection.query(sqlU, (err, res) => {
+                if (err) {
+                    answer = {error: true, codigo: 200, mensaje: "likes not gotten", data_viaje: [null]}
+                }
+                else {
+                    excursion.user_foto = res[0].user_foto
+                }
+            })
+            
             answer = {error: false, codigo: 200, mensaje: "Viaje encontrado", data_viaje: [excursion]}
 
         }
@@ -93,7 +122,6 @@ function getTopViajesLog(request, response) {
             respuesta = result ;
         }
         response.send(respuesta)
-    
     }
        
     )}
@@ -191,6 +219,37 @@ function getTopNomads(request, response) {
     })
 }
 
+function addLike(req, response) {
+    let sql = "INSERT INTO nomads.favoritos (user_id_fav, viaje_id_fav) VALUES ('" + req.body.user_id + "', '" + req.body.viaje_id + "'); ";
+    let answer;
+    connection.query(sql, (err, res) => {
+        if (err) {
+            console.log(err);
+            respuesta = { error: true, codigo: 200, mensaje: 'Not liked', data: null, userdata: null }
+        } else {
+            if (res.insertId) {
+                answer = { error: true, codigo: 200, mensaje: String(res.insertId), data_viaje: null }
+            }
+            else {
+                answer = {error: true, code: 200, message: "-1", data_viaje:[null]}
+            }
+        }
+        response.send(answer)
+    })
+}
 
-module.exports = {getTopViajes, getStartViajes, getTopViajesLog, getTopNomads, getDiasOfViaje, getPIOfDay, viajes, postViaje}
+function removeLike(req, res) {
+    let params = [req.body.viaje_id]
+    let sql = "DELETE FROM nomads.favoritos WHERE (favorito_id = ?);"
+    connection.query(sql, params, (err, res) => {
+        if (err) {
+            console.log(err);
+            respuesta = { error: true, codigo: 200, mensaje: 'No encontrado', data: null, userdata: null }
+        } else {
+            answer = {error: false, code: 200, message: String(res.affectedRows), data: res}
+        }
+    })
+}
+
+module.exports = {getTopViajes, getStartViajes, getTopViajesLog, getTopNomads, getDiasOfViaje, getPIOfDay, viajes, postViaje, addLike, removeLike}
 

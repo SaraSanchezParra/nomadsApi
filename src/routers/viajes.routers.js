@@ -19,4 +19,8 @@ router.get("/viajesDestino",viajesCTRL.viajes);
 
 router.post("/addViaje", viajesCTRL.postViaje);
 
+router.post("/viaje", viajesCTRL.addLike);
+
+router.delete("/viaje", viajesCTRL.removeLike);
+
 module.exports = router
