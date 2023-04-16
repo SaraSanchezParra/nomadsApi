@@ -19,6 +19,7 @@ app.use(viajeRouters);
 
 
 app.use(chatsRouters);
+
 app.use(userRouters);
 app.use(function(req, res, next){
     res.status(404).json({error:true, 

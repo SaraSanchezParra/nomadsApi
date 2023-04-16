@@ -180,6 +180,41 @@ function postViaje(req, response) {
 //     })
 // }
 
+// añadir día y punto interés
+
+
+function postDia(req, res) {
+    const sql = "INSERT INTO nomads.dias (nombre, viaje_id) VALUES (?, ?)";
+    const values = [req.body.nombre, req.body.viaje_id];
+    
+    connection.query(sql, values, (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ error: true, codigo: 500, mensaje: 'Error al insertar día en la base de datos' });
+      } else {
+        res.status(201).json({ error: false, codigo: 201, mensaje: 'Día insertado correctamente', data: { id: result.insertId } });
+      }
+    });
+  }
+  
+  
+
+  function postPI(req, res) {
+    const sql = "INSERT INTO nomads.puntos_de_interes (nombre, foto, dia_id, corLong, corLat) VALUES (?, ?, ?, ?, ?)";
+    const values = [req.body.nombre, req.body.foto, req.body.dia_id, req.body.corLong, req.body.corLat];
+  
+    connection.query(sql, values, (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ error: true, codigo: 500, mensaje: 'Error al añadir punto de interés a la base de datos' });
+      } else {
+        res.status(201).json({ error: false, codigo: 201, mensaje: 'Punto de interés añadido correctamente', data: { id: result.insertId } });
+      }
+    });
+  }
+  
+  
+  
 
 // VIAJES POR DESTINO Y DIAS----------------------------------------
 function viajes(request, response) {
@@ -251,5 +286,6 @@ function removeLike(req, res) {
     })
 }
 
-module.exports = {getTopViajes, getStartViajes, getTopViajesLog, getTopNomads, getDiasOfViaje, getPIOfDay, viajes, postViaje, addLike, removeLike}
+module.exports = {getTopViajes, getStartViajes, getTopViajesLog, getTopNomads, getDiasOfViaje, getPIOfDay, viajes, postViaje, addLike, removeLike, postDia, postPI}
+
 
