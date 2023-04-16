@@ -127,7 +127,6 @@ function getTopViajesLog(request, response) {
             respuesta = result ;
         }
         response.send(respuesta)
-    
     }
        
     )}
