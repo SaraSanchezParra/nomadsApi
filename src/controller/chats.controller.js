@@ -19,7 +19,7 @@ function getChatsAll(request,response){
    
     else {
       
-      respuesta = {error:true, codigo:200, mensaje:'todos tus chats', data:result}
+      respuesta = {error:false, codigo:200, mensaje:'todos tus chats', data:result}
     }
     response.send(respuesta)
   });
@@ -64,27 +64,29 @@ function getChat(request,response){
 }
 
 
-// function deleteChat(request, response)
-// {
-//   let params=[request.body.username];
-//   let sql = `DELETE FROM chats WHERE username = ?`;
-//   connection.query(sql,params,(err,resp)=>
-//     {
-//     if(err){
-//       console.log(err);
-//       respuesta = {error:true, codigo:200, mensaje:'chat no eliminado', data:resp}
-//     } else {
-//       if(resp.length > 0){
-//         respuesta = {error:false, codigo:200, mensaje:'chat eliminado', data:resp}
-//       } else {
-//         console.log('el chat proporcionado ha sido eliminado.')
-//         respuesta = {error:true, codigo:200, mensaje:'chat eliminado', data:resp}
-//       }
-//       console.log(respuesta);
-//     }
-//     response.send(respuesta)
-//   })
+function deleteChat(request, response)
+{
+  let params=[request.query.username];
+  let sql = `DELETE chats FROM chats
+             JOIN user ON user.user_id = chats.user1 
+             WHERE username = ?`;
+  connection.query(sql,params,(err,resp)=>
+    {
+    if(err){
+      console.log(err);
+      respuesta = {error:true, codigo:200, mensaje:'chat no eliminado', data:resp}
+    } else {
+      if(resp.length > 0){
+        respuesta = {error:false, codigo:200, mensaje:'chat eliminado', data:resp}
+      } else {
+        console.log('el chat proporcionado ha sido eliminado.')
+        respuesta = {error:true, codigo:200, mensaje:'chat eliminado', data:resp}
+      }
+      console.log(respuesta);
+    }
+    response.send(respuesta)
+  })
 
-// };
+};
 
-module.exports={getChatsAll,getChat}
+module.exports={getChatsAll,getChat,deleteChat}
