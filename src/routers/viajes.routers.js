@@ -24,6 +24,7 @@ router.post("/viaje", viajesCTRL.addLike);
 router.delete("/viaje", viajesCTRL.removeLike);
 router.post("/addDia", viajesCTRL.postDia);
 
-router.post("/addPI", viajesCTRL.postPI)
+router.post("/addPI", viajesCTRL.postPI);
+router.get("/addViaje", viajesCTRL.viajeID)
 
 module.exports = router
