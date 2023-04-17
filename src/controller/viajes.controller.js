@@ -27,7 +27,7 @@ function getDiasOfViaje(req, response) {
                                                     datos.ubicacion,
                                                     datos.foto,
                                                     [],
-                                                    0,
+                                                    null,
                                                     0)
 
             // create days 
@@ -35,38 +35,38 @@ function getDiasOfViaje(req, response) {
             res.forEach((viaje) => {
                 excursion.days.push({dia_id: viaje.dia_id, "nombre": viaje.nombre, "puntosDeInteres": []})
             })
-            console.log(excursion);
+            
 
             //  get likes
 
-            // let sqlLikes = `SELECT count(*) as likes FROM nomads.favoritos where viaje_id_fav = ${datos.viaje_id} group by viaje_id_fav;`
-            // console.log(sqlLikes);
-            // let nLikes;
-            // connection.query(sqlLikes, (err, res) => {
-            //     if (err) {
-            //         answer = {error: true, codigo: 200, mensaje: "likes not gotten", data_viaje: [null]}
-            //     }
-            //     else {
-            //         console.log(res[0].likes);
-            //         nLikes = res[0].likes
-            //         excursion.likes = Number(nLikes)
-            //     }
-            // })
+            let sqlLikes = `SELECT count(*) as likes FROM nomads.favoritos where viaje_id_fav = ${datos.viaje_id} group by viaje_id_fav;`
+            console.log(sqlLikes);
+            let nLikes;
+            connection.query(sqlLikes, (err, res) => {
+                if (err) {
+                    answer = {error: true, codigo: 200, mensaje: "likes not gotten", data_viaje: [null]}
+                }
+                else {
+                     
+                    //  get user foto
 
-            //  get user foto
-
-            // let sqlU = `SELECT u.photo FROM nomads.viajes as v join user as u on (v.user_id_propietario = u.user_id) where v.viaje_id = ${datos.viaje_id};`
-            // connection.query(sqlU, (err, res) => {
-            //     if (err) {
-            //         answer = {error: true, codigo: 200, mensaje: "likes not gotten", data_viaje: [null]}
-            //     }
-            //     else {
-            //         excursion.user_foto = res[0].user_foto
-            //     }
-            // })
-            
-            answer = {error: false, codigo: 200, mensaje: "Viaje encontrado", data_viaje: [excursion]}
-
+                    console.log(res[0].likes);
+                    nLikes = res[0].likes
+                    excursion.likes = Number(nLikes)
+                    let sqlU = `SELECT u.photo FROM nomads.viajes as v join user as u on (v.user_id_propietario = u.user_id) where v.viaje_id = ${datos.viaje_id};`
+                    connection.query(sqlU, (err, res) => {
+                        if (err) {
+                            answer = {error: true, codigo: 200, mensaje: "likes not gotten", data_viaje: [null]}
+                        }
+                        else {
+                            excursion.user_foto = res[0].photo
+                            console.log(res);
+                            answer = {error: false, codigo: 200, mensaje: "Viaje encontrado", data_viaje: [excursion]};
+                            console.log(excursion);
+                        }
+                    })
+                }
+            })            
         }
         response.send(answer)
     })
