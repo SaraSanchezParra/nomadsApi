@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use('/email', emailRouters);
+app.use(emailRouters);
 app.use(registerRouters);
 app.use(loginRouters);    
 app.use(viajeRouters);

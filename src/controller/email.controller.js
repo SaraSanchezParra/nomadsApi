@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 
-const postEmail = async (req, res) => {
+const postEmail =  (req, res) => {
     const { nombre, email, asunto, mensaje } = req.body;
 
     const transporter = nodemailer.createTransport({
@@ -24,16 +24,17 @@ const postEmail = async (req, res) => {
     `
     };
 
-    try {
-
-        const info = await transporter.sendMail(mailOptions);
-        console.log(info);
-
-        res.status(200).send('Correo electrónico enviado con éxito');
-    } catch (err) {
-        console.log(err);
-        res.status(500).send('Error al enviar el correo electrónico');
-    }
+    transporter.sendMail(mailOptions)
+    .then((info) =>
+    {
+        console.log(info)
+        res.send({ error: false, code: 200, message: "Correo electrónico enviado con éxito" })
+    })
+    .catch((error) => 
+    {
+        console.log(error)
+        res.send({ error: true, code: 500, message: "Error al enviar el correo electrónico" })
+    })
 };
 
 module.exports = { postEmail };
