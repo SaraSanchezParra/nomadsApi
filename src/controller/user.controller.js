@@ -13,8 +13,13 @@ function userFound(request, response) {
             console.log(err);
             respuesta = { error: true, codigo: 200, mensaje: 'No se ha encontrado el usuario', data_user: null }
         } else {
+          if (result.length === 0) {
+            respuesta = { error: true, codigo: 200, mensaje: 'Ningún usuario encontrado',  data_user: null }
+          }
+          else {
             console.log(result);
             respuesta = { error: false, codigo: 200, mensaje: 'Usuario encontrado',  data_user: result }
+          }
         }
         response.send(respuesta)
     })
