@@ -1,29 +1,45 @@
 
 const connection = require("../database");
 
-
 function getChatsAll(request,response){
   
-  
-  let sql = `SELECT photo,username, mensajes.hora FROM nomads.user
-  JOIN nomads.chats ON(user.user_id=chats.user1)
-  JOIN nomads.mensajes ON (chats.chat_id=mensajes.chat_id)
-  ORDER BY mensajes.hora DESC`;
+  let params = [request.query.user_id];
 
-  connection.query(sql, function (err, result) {
+  let sql = `SELECT photo, username, hora, chats.user_id_participante AS user_id, chats.chat_id FROM nomads.user
+    JOIN nomads.chats ON(user.user_id=chats.user_id_participante)
+    WHERE user_id_creador=? 
+    ORDER BY chats.hora DESC`;
+  
+
+  connection.query(sql,params, function (errCreador, resultCreador) {
     console.log("Estos son tus chats");
-    if(err) {
-      console.log(err);
-    respuesta ={error:true, codigo:200, mensaje:'no se encuentran tus chats', data:result} 
+    if(errCreador) {
+      console.log(errCreador);
+    respuesta ={error:true, codigo:200, mensaje:'no se encuentran tus chats', data:resultCreador} 
     } 
    
     else {
-      
-      respuesta = {error:false, codigo:200, mensaje:'todos tus chats', data:result}
+
+    sql = `SELECT photo, username, hora, chats.user_id_creador AS user_id , chats.chat_id FROM nomads.user
+           JOIN nomads.chats ON(user.user_id=chats.user_id_creador)
+           WHERE user_id_participante=? 
+           ORDER BY chats.hora DESC`;
+
+    connection.query(sql,params, function (errParticipante, resultParticipante) {
+      console.log("Estos son tus chats");
+      if(errParticipante) {
+        console.log(resultParticipante);
+      respuesta ={error:true, codigo:200, mensaje:'no se encuentran tus chats', data:result} 
+      } 
+      else{
+  
+      respuesta = {error:false, codigo:200, mensaje:'todos tus chats', data:[...resultCreador, ...resultParticipante]}
     }
     response.send(respuesta)
+    })}
   });
 }
+
 
 
 function getChat(request,response){
@@ -31,15 +47,15 @@ function getChat(request,response){
   let sql;
 
   if(request.query.username){
-    sql = `SELECT photo,username, mensajes.hora FROM nomads.user
-    JOIN nomads.chats ON(user.user_id=chats.user1)
+    sql = `SELECT photo,username, hora FROM nomads.user
+    JOIN nomads.chats ON(user.user_id=chats.user_id_creador)
     JOIN nomads.mensajes ON (chats.chat_id=mensajes.chat_id)
     WHERE user.username = '${username}'` ;  
   
   }else{
 
-    sql = `SELECT photo,username, mensajes.hora FROM nomads.user
-  JOIN nomads.chats ON(user.user_id=chats.user1)
+    sql = `SELECT photo,username, hora FROM nomads.user
+  JOIN nomads.chats ON(user.user_id=chats.user_id_creador)
   JOIN nomads.mensajes ON (chats.chat_id=mensajes.chat_id)
   ORDER BY mensajes.hora DESC`;
 
@@ -68,7 +84,7 @@ function deleteChat(request, response)
 {
   let params=[request.query.username];
   let sql = `DELETE chats FROM chats
-             JOIN user ON user.user_id = chats.user1 
+             JOIN user ON user.user_id = chats.user_id_creador 
              WHERE username = ?`;
   connection.query(sql,params,(err,resp)=>
     {
