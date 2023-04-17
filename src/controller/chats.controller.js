@@ -26,42 +26,42 @@ function getChatsAll(request,response){
 }
 
 
-// function getChat(request,response){
-//   let username= request.query.username
-//   let sql;
+function getChat(request,response){
+  let username= request.query.username
+  let sql;
 
-//   if(request.query.username){
-//     sql = `SELECT photo,username, mensajes.hora FROM nomads.user
-//     JOIN nomads.chats ON(user.user_id=chats.user1)
-//     JOIN nomads.mensajes ON (chats.chat_id=mensajes.chat_id)
-//     WHERE user.username = '${username}'` ;  
+  if(request.query.username){
+    sql = `SELECT photo,username, mensajes.hora FROM nomads.user
+    JOIN nomads.chats ON(user.user_id=chats.user1)
+    JOIN nomads.mensajes ON (chats.chat_id=mensajes.chat_id)
+    WHERE user.username = '${username}'` ;  
   
-//   }else{
+  }else{
 
-//     sql = `SELECT photo,username, mensajes.hora FROM nomads.user
-//   JOIN nomads.chats ON(user.user_id=chats.user1)
-//   JOIN nomads.mensajes ON (chats.chat_id=mensajes.chat_id)
-//   ORDER BY mensajes.hora DESC`;
+    sql = `SELECT photo,username, mensajes.hora FROM nomads.user
+  JOIN nomads.chats ON(user.user_id=chats.user1)
+  JOIN nomads.mensajes ON (chats.chat_id=mensajes.chat_id)
+  ORDER BY mensajes.hora DESC`;
 
-//   }
+  }
 
-//   connection.query(sql,(err,res)=>{
-//     if(err){
-//       console.log(err);
-//       respuesta = {error:false, codigo:200, mensaje:'usuario no tiene chats', data:res}
-//     } else {
-//       if(res.length > 0){
-//         respuesta = {error:false, codigo:200, mensaje:'chats encontrados', data:res}
-//       } else {
-//         console.log('Los datos proporcionados no coinciden con ningún usuario en la base de datos.')
-//         respuesta = {error:true, codigo:200, mensaje:'No encontrado', data:res}
-//       }
-//       console.log(respuesta);
-//     }
-//     response.send(respuesta)
-//   })
+  connection.query(sql,(err,res)=>{
+    if(err){
+      console.log(err);
+      respuesta = {error:false, codigo:200, mensaje:'usuario no tiene chats', data:res}
+    } else {
+      if(res.length > 0){
+        respuesta = {error:false, codigo:200, mensaje:'chats encontrados', data:res}
+      } else {
+        console.log('Los datos proporcionados no coinciden con ningún usuario en la base de datos.')
+        respuesta = {error:true, codigo:200, mensaje:'No encontrado', data:res}
+      }
+      console.log(respuesta);
+    }
+    response.send(respuesta)
+  })
 
-// }
+}
 
 
 // function deleteChat(request, response)
