@@ -6,6 +6,7 @@ const registerRouters = require("./routers/register.routers.js")
 const loginRouters = require("./routers/login.routers")
 const chatsRouters= require("./routers/chats.routers")
 const emailRouters= require("./routers/email.routers")
+const mensajesRouters= require("./routers/mensajes.routers")
 const errorHandling = require("./error/errorHandling")
 const bodyParser = require('body-parser');
 const app = express();
@@ -21,6 +22,7 @@ app.use('/email', emailRouters);
 app.use(registerRouters);
 app.use(loginRouters);    
 app.use(viajeRouters);
+app.use(mensajesRouters);
 
 app.use(chatsRouters);
 

@@ -3,9 +3,10 @@ const router = Router();
 const chatsCtrl = require("../controller/chats.controller")
 
 
-router.get("/chats",chatsCtrl.getChatsAll)
-router.get("/busquedaChat",chatsCtrl.getChat)
-router.delete("/chatEliminado",chatsCtrl.deleteChat)
+router.get("/chats",chatsCtrl.getChats)
+router.get("/chat",chatsCtrl.getChat)
+router.delete("/chats",chatsCtrl.deleteChat)
+router.post("/chats",chatsCtrl.postChat)
 
 
 module.exports = router;
