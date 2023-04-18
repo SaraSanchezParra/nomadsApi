@@ -25,13 +25,6 @@ function userFound(request, response) {
     })
 }
 
-
-
-
-
-
-
-
 function getStart(request, response) {
     let respuesta = {error: true, codigo: 200, mensaje: 'Beginning point'};
     response.send(respuesta);
