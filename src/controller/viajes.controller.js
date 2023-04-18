@@ -132,7 +132,11 @@ function getPIOfDay(req, response) {
 function getTopViajes(request, response) {
     let respuesta;
     let sql =
-        "SELECT viajes.titulo, viajes.descripcion, viajes.foto,user_id_propietario, COUNT(*) AS likes FROM favoritos JOIN viajes ON viajes.viaje_id = favoritos.viaje_id_fav GROUP BY viajes.viaje_id ORDER BY likes DESC LIMIT 3";
+        `SELECT viajes.titulo, viajes.descripcion, viajes.foto,user_id_propietario as user_id, viajes.ubicacion, user.photo AS user_foto, viajes.viaje_id, COUNT(*) AS likes FROM favoritos 
+        JOIN viajes ON (viajes.viaje_id = favoritos.viaje_id_fav) 
+        JOIN user ON (user.user_id = viajes.user_id_propietario) 
+        GROUP BY viajes.viaje_id
+        ORDER BY likes DESC LIMIT 3`;
 
     connection.query(sql, function (err, result) {
         if (err) {
@@ -155,7 +159,7 @@ function getTopViajes(request, response) {
 function getTopViajesLog(request, response) {
 
     let respuesta;
-    let sql = `SELECT viajes.titulo, viajes.descripcion, viajes.foto, user.photo AS user_foto, user.user_id, COUNT(*) AS likes 
+    let sql = `SELECT viajes.titulo, viajes.descripcion, viajes.foto, user.photo AS user_foto, user.user_id, viajes.viaje_id, COUNT(*) AS likes 
     FROM favoritos 
     JOIN viajes ON (viajes.viaje_id = favoritos.viaje_id_fav) 
     JOIN user ON (user.user_id = viajes.user_id_propietario)
