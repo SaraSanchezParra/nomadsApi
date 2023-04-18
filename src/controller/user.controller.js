@@ -6,6 +6,8 @@ function userFound(request, response) {
     let respuesta;
     let params = [request.query.username]
     let sql = "SELECT username, name, surname, email, descripcion, photo FROM nomads.user WHERE username = ?"
+
+ 
     console.log(sql);
 
     connection.query(sql,params, function(err, result){
