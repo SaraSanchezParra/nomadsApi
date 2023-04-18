@@ -22,9 +22,13 @@ router.post("/addViaje", viajesCTRL.postViaje);
 router.post("/viaje", viajesCTRL.addLike);
 
 router.delete("/viaje", viajesCTRL.removeLike);
+
 router.post("/addDia", viajesCTRL.postDia);
 
 router.post("/addPI", viajesCTRL.postPI);
+
+router.put("/modificarViaje", viajesCTRL.modViaje)
+
 router.get("/addViaje", viajesCTRL.viajeID)
 
 module.exports = router

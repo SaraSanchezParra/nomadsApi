@@ -206,32 +206,7 @@ function postViaje(req, response) {
     })
 }
 
-// function putViaje(req, response) {
-//     let params = [req.body.titulo,
-//                             req.body.descripcion,
-//                             req.body.ubicacion,
-//                             req.body.foto,
-//                             req.body.n_dias_viaje,
-//                             req.body.viaje_id]
-//     let sql = "UPDATE nomads.viajes SET titulo = COALESCE(?, titulo), descripcion = COALESCE(?, descripcion), ubicacion = COALESCE(?, ubicacion), foto = COALESCE(?, foto), n_dias_viaje = COALESCE(?, n_dias_viaje)' WHERE (viaje_id = ?);";
-//     let answer;
-//     connection.query(sql, params, (err, res) => {
-//         if (err) {
-//             answer =  {error: true, code: 200, message: "wrong db connection", data: res};
-//             console.log(err);
-//         }
-//         else {
-//             if (res.affectedRows) {
-//                 answer = { error: true, codigo: 200, mensaje: String(res.affectedRows), data_viaje: null }
-//             }
-//             else {
-//                 answer = {error: true, code: 200, message: "0", data_viaje:[null]}
-//             }
-//         }
-//         response.send(answer)
-//         // in front, succesful edit is when message === "1", and failed edit is message === "0"
-//     })
-// }
+
 
 // añadir día y punto interés
 
@@ -303,7 +278,40 @@ function postDia(req, res) {
         response.send(respuesta)
     })
   }
-  
+  //MODIFICAR VIAJE Y DIA
+
+  function modViaje(req, response) {
+        let params = [req.body.titulo,
+                                req.body.descripcion,
+                                req.body.ubicacion,
+                                req.body.foto,
+                                req.body.n_dias_viaje,
+                                req.body.viaje_id]
+        let sql = "UPDATE nomads.viajes SET titulo = COALESCE(?, titulo), descripcion = COALESCE(?, descripcion), ubicacion = COALESCE(?, ubicacion), foto = COALESCE(?, foto), n_dias_viaje = COALESCE(?, n_dias_viaje) WHERE (viaje_id = ?);";
+        let answer;
+        connection.query(sql, params, (err, res) => {
+            if (err) {
+                answer =  {error: true, code: 200, message: "wrong db connection", data: res};
+                console.log(err);
+            }
+            else {
+                if (res.affectedRows) {
+                    answer = { error: false, codigo: 200, mensaje: String(res.affectedRows), data_viaje: null }
+                }
+                else {
+                    answer = {error: true, code: 200, message: "0", data_viaje:[null]}
+                }
+            }
+            response.send(answer)
+            // in front, succesful edit is when message === "1", and failed edit is message === "0"
+        })
+    }
+
+    function modPI(req, response) {
+        let params =[req.body.nombre,
+                    req.body.foto]
+        let sql =  ""
+    }
 
 // VIAJES POR DESTINO Y DIAS----------------------------------------
 function viajes(request, response) {
@@ -375,6 +383,6 @@ function removeLike(req, res) {
     })
 }
 
-module.exports = {getTopViajes, getStartViajes, getTopViajesLog, getTopNomads, getDiasOfViaje, getPIOfDay, viajes, postViaje, addLike, removeLike, postDia, postPI, viajeID}
+module.exports = {getTopViajes, getStartViajes, getTopViajesLog, getTopNomads, getDiasOfViaje, getPIOfDay, viajes, postViaje, addLike, removeLike, postDia, postPI, viajeID, modViaje}
 
 
