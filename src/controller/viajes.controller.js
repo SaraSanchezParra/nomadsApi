@@ -111,7 +111,7 @@ function getTopViajes(request, response) {
 function getTopViajesLog(request, response) {
 
     let respuesta;
-    let sql = `SELECT viajes.titulo, viajes.descripcion, viajes.foto, user.photo AS user_foto, user.user_id, COUNT(*) AS likes 
+    let sql = `SELECT viajes.titulo, viajes.descripcion, viajes.foto, user.photo AS user_foto, user.user_id,git  COUNT(*) AS likes 
     FROM favoritos 
     JOIN viajes ON (viajes.viaje_id = favoritos.viaje_id_fav) 
     JOIN user ON (user.user_id = viajes.user_id_propietario)
