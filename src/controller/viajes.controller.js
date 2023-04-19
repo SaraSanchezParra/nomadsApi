@@ -13,6 +13,7 @@ function getStartViajes(req, res) {
 }
 
 function getDiasOfViaje(req, response) {
+    let excursion;
     let answer;
     let viaje_id = req.query.viaje_id;
     let params = [viaje_id]
@@ -25,9 +26,11 @@ function getDiasOfViaje(req, response) {
 
             //  create Viaje
 
+            console.log(res);
+
             let datos = res[0]
 
-            let excursion = new Viaje(datos.viaje_id,
+            excursion = new Viaje(datos.viaje_id,
                 datos.titulo,
                 datos.descripcion,
                 datos.ubicacion,
@@ -41,6 +44,8 @@ function getDiasOfViaje(req, response) {
         }
 
         // create days
+        
+
 
         res.forEach((viaje) => {
             excursion.days.push({
@@ -48,9 +53,9 @@ function getDiasOfViaje(req, response) {
                 nombre: viaje.nombre,
                 puntosDeInteres: [],
             });
+            answer = { error: false, codigo: 200, mensaje: "Viaje encontrado", data_viaje: [excursion] }
         });
-
-        answer = { error: false, codigo: 200, mensaje: "Viaje encontrado", data_viaje: [excursion] }
+        response.send(answer)
     })
 }
 
