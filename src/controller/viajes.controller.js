@@ -322,7 +322,7 @@ function viajes(request, response) {
 
     let respuesta;
     let params = [request.query.ubicacion, request.query.ndiasViaje]
-    let sql = "SELECT viaje_id, foto, titulo, viajes.descripcion, n_likes, user.photo AS user_foto FROM viajes " +
+    let sql = "SELECT viaje_id, foto, titulo, viajes.descripcion, n_likes AS likes, ubicacion, user.photo AS user_foto FROM viajes " +
         "JOIN user ON (viajes.user_id_propietario = user.user_id) WHERE ubicacion = ? AND n_dias_viaje = ? "
     console.log(sql);
 
