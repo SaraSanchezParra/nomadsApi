@@ -26,11 +26,12 @@ function getDiasOfViaje(req, response) {
 
             //  create Viaje
 
-            console.log(res);
+            // console.log(res);
 
             let datos = res[0]
 
-            excursion = new Viaje(datos.viaje_id,
+            excursion = new Viaje(
+                datos.viaje_id,
                 datos.titulo,
                 datos.descripcion,
                 datos.ubicacion,
@@ -43,9 +44,9 @@ function getDiasOfViaje(req, response) {
                 datos.corLong)
         }
 
-        // create days
-        
+        console.log(excursion);
 
+        // create days
 
         res.forEach((viaje) => {
             excursion.days.push({
@@ -53,8 +54,8 @@ function getDiasOfViaje(req, response) {
                 nombre: viaje.nombre,
                 puntosDeInteres: [],
             });
-            answer = { error: false, codigo: 200, mensaje: "Viaje encontrado", data_viaje: [excursion] }
         });
+        answer = { error: false, codigo: 200, mensaje: "Viaje encontrado", data_viaje: [excursion] }
         response.send(answer)
     })
 }
@@ -62,13 +63,13 @@ function getDiasOfViaje(req, response) {
 function getPIOfDay(req, response) {
     let answer;
     let params = [req.query.dia_id]
-    let sql = "SELECT d.viaje_id, p.nombre, p.foto, p.corLong, p.corLat FROM nomads.dias as d join puntos_de_interes as p on (d.dia_id = p.dia_id) where d.dia_id = ?;";
+    let sql = "SELECT d.viaje_id, p.dia_id, p.nombre, p.foto, p.corLong, p.corLat FROM nomads.dias as d join puntos_de_interes as p on (d.dia_id = p.dia_id) where d.dia_id = ?;";
     connection.query(sql, params, (err, res) => {
         if (err) {
             answer = { error: true, codigo: 200, mensaje: err, data_viaje: [null] }
         }
         else {
-            answer = { error: true, codigo: 200, mensaje: err, data_dia: res }
+            answer = { error: false, codigo: 200, mensaje: err, data_dia: res }
         }
         response.send(answer)
     })
