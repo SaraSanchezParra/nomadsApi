@@ -80,11 +80,10 @@ function getPIOfDay(req, response) {
 function getTopViajes(request, response) {
     let respuesta;
     let sql =
-        `SELECT viajes.titulo, viajes.descripcion, viajes.foto,user_id_propietario as user_id, viajes.ubicacion, user.photo AS user_foto, viajes.viaje_id, COUNT(*) AS likes FROM favoritos 
-        JOIN viajes ON (viajes.viaje_id = favoritos.viaje_id_fav) 
+        `SELECT viajes.titulo, viajes.descripcion, viajes.foto,user_id_propietario as user_id, viajes.ubicacion, user.photo AS user_foto, viajes.viaje_id, viajes.n_likes AS likes FROM viajes
         JOIN user ON (user.user_id = viajes.user_id_propietario) 
         GROUP BY viajes.viaje_id
-        ORDER BY likes DESC LIMIT 3`;
+        ORDER BY n_likes DESC LIMIT 3`;
 
     connection.query(sql, function (err, result) {
         if (err) {
@@ -107,14 +106,12 @@ function getTopViajes(request, response) {
 function getTopViajesLog(request, response) {
 
     let respuesta;
-    let sql = `SELECT viajes.titulo, viajes.descripcion, viajes.foto, user.photo AS user_foto, user.user_id, viajes.viaje_id, COUNT(*) AS likes 
-    FROM favoritos 
-    JOIN viajes ON (viajes.viaje_id = favoritos.viaje_id_fav) 
+    let sql = `SELECT viajes.titulo, viajes.descripcion, viajes.foto, user.photo AS user_foto, user.user_id, viajes.viaje_id, viajes.n_likes AS likes 
+    FROM viajes  
     JOIN user ON (user.user_id = viajes.user_id_propietario)
     GROUP BY viajes.viaje_id 
-    ORDER BY likes DESC 
-    LIMIT 4
-    `;
+    ORDER BY n_likes DESC 
+    LIMIT 4`;
 
     connection.query(sql, function (err, result) {
         if (err) {
@@ -289,7 +286,12 @@ function viajes(request, response) {
 function getTopNomads(request, response) {
 
     let respuesta;
-    let sql = "SELECT user.photo, user.username, COUNT(*) AS likes FROM favoritos JOIN viajes ON viajes.viaje_id = favoritos.viaje_id_fav JOIN user ON user.user_id = viajes.user_id_propietario GROUP BY user.user_id, user.photo ORDER BY likes DESC LIMIT 4";
+    let sql = `SELECT user.photo, user.username, COUNT(viajes.n_likes) AS likes
+    FROM viajes
+    JOIN user ON user.user_id = viajes.user_id_propietario
+    GROUP BY user.user_id, user.photo
+    ORDER BY likes DESC
+    LIMIT 4`;
 
     connection.query(sql, function (err, result) {
         if (err) {
@@ -335,6 +337,6 @@ function removeLike(req, res) {
     })
 }
 
-module.exports = { getTopViajes, getStartViajes, getDiasOfViaje,  getTopViajesLog, getTopNomads, getPIOfDay, viajes, postViaje, addLike, removeLike, postDia, postPI, viajeID, modViaje }
+module.exports = { getTopViajes, getStartViajes, getDiasOfViaje, getTopViajesLog, getTopNomads, getPIOfDay, viajes, postViaje, addLike, removeLike, postDia, postPI, viajeID, modViaje }
 
 
