@@ -12,105 +12,105 @@ function getStartViajes(req, res) {
     res.send(answer);
 }
 
-function getDiasOfViaje(req, response) {
-    let answer;
-    let viaje_id = req.query.viaje_id;
-    let params = [viaje_id];
-    let sql =
-        "SELECT v.viaje_id, v.titulo, v.ubicacion, v.foto, d.nombre, d.dia_id, u.photo FROM nomads.viajes as v join dias as d on (v.viaje_id = d.viaje_id) join user as u on (v.user_id_propietario = u.user_id) where v.viaje_id = ?;";
-    console.log(req.query);
-    connection.query(sql, params, (err, res) => {
-        if (err) {
-            answer = { error: true, codigo: 200, mensaje: err, data_viaje: [null] };
-        } else {
-            // create viaje
-            let datos = res[0];
-            let excursion = new Viaje(
-                datos.viaje_id,
-                datos.titulo,
-                datos.descripcion,
-                datos.ubicacion,
-                datos.foto,
-                [],
-                null,
-                0
-            );
+// function getDiasOfViaje(req, response) {
+//     let answer;
+//     let viaje_id = req.query.viaje_id;
+//     let params = [viaje_id];
+//     let sql =
+//         "SELECT v.viaje_id, v.titulo, v.ubicacion, v.foto, d.nombre, d.dia_id, u.photo FROM nomads.viajes as v join dias as d on (v.viaje_id = d.viaje_id) join user as u on (v.user_id_propietario = u.user_id) where v.viaje_id = ?;";
+//     console.log(req.query);
+//     connection.query(sql, params, (err, res) => {
+//         if (err) {
+//             answer = { error: true, codigo: 200, mensaje: err, data_viaje: [null] };
+//         } else {
+//             // create viaje
+//             let datos = res[0];
+//             let excursion = new Viaje(
+//                 datos.viaje_id,
+//                 datos.titulo,
+//                 datos.descripcion,
+//                 datos.ubicacion,
+//                 datos.foto,
+//                 [],
+//                 null,
+//                 0
+//             );
 
-            // create days
+//             // create days
 
-            res.forEach((viaje) => {
-                excursion.days.push({
-                    dia_id: viaje.dia_id,
-                    nombre: viaje.nombre,
-                    puntosDeInteres: [],
-                });
-            });
+//             res.forEach((viaje) => {
+//                 excursion.days.push({
+//                     dia_id: viaje.dia_id,
+//                     nombre: viaje.nombre,
+//                     puntosDeInteres: [],
+//                 });
+//             });
 
-            //  get likes
+//             //  get likes
 
-            let sqlLikes = `SELECT count(*) as likes FROM nomads.favoritos where viaje_id_fav = ${datos.viaje_id} group by viaje_id_fav;`;
-            console.log(sqlLikes);
-            let nLikes;
-            connection.query(sqlLikes, (err, res) => {
-                if (err) {
-                    answer = { error: true, codigo: 200, mensaje: err, data_viaje: [null] }
-                }
-                else {
+//             let sqlLikes = `SELECT count(*) as likes FROM nomads.favoritos where viaje_id_fav = ${datos.viaje_id} group by viaje_id_fav;`;
+//             console.log(sqlLikes);
+//             let nLikes;
+//             connection.query(sqlLikes, (err, res) => {
+//                 if (err) {
+//                     answer = { error: true, codigo: 200, mensaje: err, data_viaje: [null] }
+//                 }
+//                 else {
 
-                    // create viaje
-                    let datos = res[0]
-                    let excursion = new Viaje(datos.viaje_id,
-                        datos.titulo,
-                        datos.descripcion,
-                        datos.ubicacion,
-                        datos.foto,
-                        [],
-                        0,
-                        0)
+//                     // create viaje
+//                     let datos = res[0]
+//                     let excursion = new Viaje(datos.viaje_id,
+//                         datos.titulo,
+//                         datos.descripcion,
+//                         datos.ubicacion,
+//                         datos.foto,
+//                         [],
+//                         0,
+//                         0)
 
-                    // create days 
+//                     // create days 
 
-                    res.forEach((viaje) => {
-                        excursion.days.push({ dia_id: viaje.dia_id, "nombre": viaje.nombre, "puntosDeInteres": [] })
-                    })
-                    console.log(excursion);
+//                     res.forEach((viaje) => {
+//                         excursion.days.push({ dia_id: viaje.dia_id, "nombre": viaje.nombre, "puntosDeInteres": [] })
+//                     })
+//                     console.log(excursion);
 
-                    //  get likes
+//                     //  get likes
 
-                    let sqlLikes = `SELECT count(*) as likes FROM nomads.favoritos where viaje_id_fav = ${datos.viaje_id} group by viaje_id_fav;`
-                    console.log(sqlLikes);
-                    let nLikes;
-                    connection.query(sqlLikes, (err, res) => {
-                        if (err) {
-                            answer = { error: true, codigo: 200, mensaje: "likes not gotten", data_viaje: [null] }
-                        }
-                        else {
-                            console.log(res[0].likes);
-                            nLikes = res[0].likes
-                            excursion.likes = Number(nLikes)
-                        }
-                    })
+//                     let sqlLikes = `SELECT count(*) as likes FROM nomads.favoritos where viaje_id_fav = ${datos.viaje_id} group by viaje_id_fav;`
+//                     console.log(sqlLikes);
+//                     let nLikes;
+//                     connection.query(sqlLikes, (err, res) => {
+//                         if (err) {
+//                             answer = { error: true, codigo: 200, mensaje: "likes not gotten", data_viaje: [null] }
+//                         }
+//                         else {
+//                             console.log(res[0].likes);
+//                             nLikes = res[0].likes
+//                             excursion.likes = Number(nLikes)
+//                         }
+//                     })
 
-                    //  get user foto
+//                     //  get user foto
 
-                    let sqlU = `SELECT u.photo FROM nomads.viajes as v join user as u on (v.user_id_propietario = u.user_id) where v.viaje_id = ${datos.viaje_id};`
-                    connection.query(sqlU, (err, res) => {
-                        if (err) {
-                            answer = { error: true, codigo: 200, mensaje: "likes not gotten", data_viaje: [null] }
-                        }
-                        else {
-                            excursion.user_foto = res[0].user_foto
-                        }
-                    })
+//                     let sqlU = `SELECT u.photo FROM nomads.viajes as v join user as u on (v.user_id_propietario = u.user_id) where v.viaje_id = ${datos.viaje_id};`
+//                     connection.query(sqlU, (err, res) => {
+//                         if (err) {
+//                             answer = { error: true, codigo: 200, mensaje: "likes not gotten", data_viaje: [null] }
+//                         }
+//                         else {
+//                             excursion.user_foto = res[0].user_foto
+//                         }
+//                     })
 
-                    answer = { error: false, codigo: 200, mensaje: "Viaje encontrado", data_viaje: [excursion] }
+//                     answer = { error: false, codigo: 200, mensaje: "Viaje encontrado", data_viaje: [excursion] }
 
-                }
-                response.send(answer)
-            })
-        }
-    })
-}
+//                 }
+//                 response.send(answer)
+//             })
+//         }
+//     })
+// }
 
 function getPIOfDay(req, response) {
     let answer;
@@ -387,6 +387,6 @@ function removeLike(req, res) {
     })
 }
 
-module.exports = {getTopViajes, getStartViajes, getTopViajesLog, getTopNomads, getDiasOfViaje, getPIOfDay, viajes, postViaje, addLike, removeLike, postDia, postPI, viajeID, modViaje}
+module.exports = {getTopViajes, getStartViajes, getTopViajesLog, getTopNomads, getPIOfDay, viajes, postViaje, addLike, removeLike, postDia, postPI, viajeID, modViaje}
 
 
