@@ -1,5 +1,7 @@
 const connection = require("../database");
 const { User } = require("../models/user")
+const CryptoJS = require("crypto-js");
+
 function postUserLoging(request, response) {
   // let respuesta;
 
@@ -8,7 +10,12 @@ function postUserLoging(request, response) {
   let username = request.body.username;
   let password = request.body.password;
 
-  let params = [username, password];
+  const KEY = '123456$#@$^@1ERF%&€'
+  let hash = CryptoJS.HmacSHA256(password, KEY);
+  let passwordCifrado= CryptoJS.enc.Base64.stringify(hash); 
+  console.log(passwordCifrado);
+
+  let params = [username, passwordCifrado];
   console.log(params);
 
   let sql = `SELECT * FROM nomads.user WHERE username = ? AND password = ?`;
