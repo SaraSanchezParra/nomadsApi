@@ -1,7 +1,9 @@
 const connection = require("../database")
+const CryptoJS = require("crypto-js");
 
 
 function getRegister(request,response){
+
   let sql;
   if (request.query.user_id == null) 
   sql = "SELECT * FROM user";
@@ -30,14 +32,22 @@ function postRegister(request,response)
     foto = "https://imgur.com/NtZPyAq";
   }
 
+  const KEY = '123456$#@$^@1ERF%&€'
+  let password = request.body.password;
+  let hash = CryptoJS.HmacSHA256(password, KEY);
+  let passwordCifrado= CryptoJS.enc.Base64.stringify(hash); 
+  console.log(passwordCifrado);
+  
   let sql = "INSERT INTO user (username,name,surname,email,descripcion,password,photo)" + 
   "VAlUES ('" + request.body.username + "','"+ 
                 request.body.name + "', '" +
                 request.body.surname + "', '" +  
                 request.body.email + "','', '" + 
-                request.body.password + "','" + 
+                passwordCifrado + "','" + 
                 foto + "')"
-  console.log(sql);
+  // console.log(sql);
+
+  
   connection.query(sql,function(err,res)
   {
     if(err){
