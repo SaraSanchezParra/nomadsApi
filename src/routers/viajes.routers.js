@@ -11,7 +11,7 @@ router.get("/topViajesLog", viajesCTRL.getTopViajesLog);
 
 router.get("/topNomads", viajesCTRL.getTopNomads);
 
-router.get("/viaje", viajesCTRL.getDiasOfViaje);
+// router.get("/viaje", viajesCTRL.getDiasOfViaje);
 
 router.get("/getPI", viajesCTRL.getPIOfDay);
 
