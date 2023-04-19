@@ -9,7 +9,9 @@ const connection = require("../database");
 function getMessages(request,response)
 {
   let params=[request.query.chat_id]
+  console.log(request.query);
   let sql =`SELECT emisor,mensaje_body FROM nomads.mensajes WHERE chat_id=?`
+  console.log(params);
   connection.query(sql,params,(err,resp)=>
     {
     if(err){
@@ -17,7 +19,9 @@ function getMessages(request,response)
       respuesta = {error:true, codigo:200, mensaje:'no hay mensajes', data:resp}
     } else {
         respuesta = {error:false, codigo:200, mensaje:'mensajes', data:resp}
+        
     } 
+    console.log(respuesta)
     response.send(respuesta)
   })
 }

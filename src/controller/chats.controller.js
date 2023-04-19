@@ -45,10 +45,16 @@ function getChats(request,response){
 // debe devolver el chat_id
 
 function getChat(request,response){
-  let params = [request.query.user_id_creador,request.query.user_id_participante,request.query.user_id_participante, request.query.user_id_creador];
+  let params = [request.query.user_id1,
+                request.query.user_id2,
+                request.query.user_id1, 
+                request.query.user_id2];
+    
   let sql=`SELECT * FROM chats
            WHERE (chats.user_id_creador=? AND chats.user_id_participante=?) 
            OR (chats.user_id_participante=? AND chats.user_id_creador=?)`;
+  
+  console.log(request.query);
 
   connection.query(sql,params,(err,resp)=>
     {
@@ -56,8 +62,10 @@ function getChat(request,response){
       console.log(err);
       respuesta = {error:true, codigo:200, mensaje:'el chat no existe', data:resp}
     } else {
+        console.log(resp);
         respuesta = {error:false, codigo:200, mensaje:'chat encontrado', data:resp}
     } 
+    console.log(respuesta);
     response.send(respuesta)
   })
 }
