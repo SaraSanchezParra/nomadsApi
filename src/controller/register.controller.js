@@ -22,7 +22,13 @@ function getRegister(request,response){
 function postRegister(request,response)
 {
   console.log(request.body);
-
+  let foto;
+  if (request.body.photo != null) {
+    foto = request.body.photo
+  }
+  else {
+    foto = "https://imgur.com/NtZPyAq";
+  }
 
   let sql = "INSERT INTO user (username,name,surname,email,descripcion,password,photo)" + 
   "VAlUES ('" + request.body.username + "','"+ 
@@ -30,7 +36,7 @@ function postRegister(request,response)
                 request.body.surname + "', '" +  
                 request.body.email + "','', '" + 
                 request.body.password + "','" + 
-                request.body.photo + "')"
+                foto + "')"
   console.log(sql);
   connection.query(sql,function(err,res)
   {
