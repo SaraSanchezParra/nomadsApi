@@ -12,105 +12,52 @@ function getStartViajes(req, res) {
     res.send(answer);
 }
 
-// function getDiasOfViaje(req, response) {
-//     let answer;
-//     let viaje_id = req.query.viaje_id;
-//     let params = [viaje_id];
-//     let sql =
-//         "SELECT v.viaje_id, v.titulo, v.ubicacion, v.foto, d.nombre, d.dia_id, u.photo FROM nomads.viajes as v join dias as d on (v.viaje_id = d.viaje_id) join user as u on (v.user_id_propietario = u.user_id) where v.viaje_id = ?;";
-//     console.log(req.query);
-//     connection.query(sql, params, (err, res) => {
-//         if (err) {
-//             answer = { error: true, codigo: 200, mensaje: err, data_viaje: [null] };
-//         } else {
-//             // create viaje
-//             let datos = res[0];
-//             let excursion = new Viaje(
-//                 datos.viaje_id,
-//                 datos.titulo,
-//                 datos.descripcion,
-//                 datos.ubicacion,
-//                 datos.foto,
-//                 [],
-//                 null,
-//                 0
-//             );
+function getDiasOfViaje(req, response) {
+    let excursion;
+    let answer;
+    let viaje_id = req.query.viaje_id;
+    let params = [viaje_id]
+    let sql = "SELECT v.viaje_id, titulo, ubicacion, foto, user_id_propietario as user_id, n_likes as likes, u.photo as user_foto, d.nombre, d.dia_id, corLat, corLong FROM nomads.viajes as v Join nomads.dias as d ON (v.viaje_id = d.viaje_id) Join nomads.user as u ON (v.user_id_propietario= u.user_id) Where v.viaje_id = ?;";
+    connection.query(sql, params, (err, res) => {
+        if (err) {
+            answer = { error: true, codigo: 200, mensaje: err, data_viaje: [null] };
+        }
+        else {
 
-//             // create days
+            //  create Viaje
 
-//             res.forEach((viaje) => {
-//                 excursion.days.push({
-//                     dia_id: viaje.dia_id,
-//                     nombre: viaje.nombre,
-//                     puntosDeInteres: [],
-//                 });
-//             });
+            console.log(res);
 
-//             //  get likes
+            let datos = res[0]
 
-//             let sqlLikes = `SELECT count(*) as likes FROM nomads.favoritos where viaje_id_fav = ${datos.viaje_id} group by viaje_id_fav;`;
-//             console.log(sqlLikes);
-//             let nLikes;
-//             connection.query(sqlLikes, (err, res) => {
-//                 if (err) {
-//                     answer = { error: true, codigo: 200, mensaje: err, data_viaje: [null] }
-//                 }
-//                 else {
+            excursion = new Viaje(datos.viaje_id,
+                datos.titulo,
+                datos.descripcion,
+                datos.ubicacion,
+                datos.foto,
+                [],
+                datos.user_foto,
+                datos.likes,
+                datos.user_id,
+                datos.corLat,
+                datos.corLong)
+        }
 
-//                     // create viaje
-//                     let datos = res[0]
-//                     let excursion = new Viaje(datos.viaje_id,
-//                         datos.titulo,
-//                         datos.descripcion,
-//                         datos.ubicacion,
-//                         datos.foto,
-//                         [],
-//                         0,
-//                         0)
+        // create days
+        
 
-//                     // create days 
 
-//                     res.forEach((viaje) => {
-//                         excursion.days.push({ dia_id: viaje.dia_id, "nombre": viaje.nombre, "puntosDeInteres": [] })
-//                     })
-//                     console.log(excursion);
-
-//                     //  get likes
-
-//                     let sqlLikes = `SELECT count(*) as likes FROM nomads.favoritos where viaje_id_fav = ${datos.viaje_id} group by viaje_id_fav;`
-//                     console.log(sqlLikes);
-//                     let nLikes;
-//                     connection.query(sqlLikes, (err, res) => {
-//                         if (err) {
-//                             answer = { error: true, codigo: 200, mensaje: "likes not gotten", data_viaje: [null] }
-//                         }
-//                         else {
-//                             console.log(res[0].likes);
-//                             nLikes = res[0].likes
-//                             excursion.likes = Number(nLikes)
-//                         }
-//                     })
-
-//                     //  get user foto
-
-//                     let sqlU = `SELECT u.photo FROM nomads.viajes as v join user as u on (v.user_id_propietario = u.user_id) where v.viaje_id = ${datos.viaje_id};`
-//                     connection.query(sqlU, (err, res) => {
-//                         if (err) {
-//                             answer = { error: true, codigo: 200, mensaje: "likes not gotten", data_viaje: [null] }
-//                         }
-//                         else {
-//                             excursion.user_foto = res[0].user_foto
-//                         }
-//                     })
-
-//                     answer = { error: false, codigo: 200, mensaje: "Viaje encontrado", data_viaje: [excursion] }
-
-//                 }
-//                 response.send(answer)
-//             })
-//         }
-//     })
-// }
+        res.forEach((viaje) => {
+            excursion.days.push({
+                dia_id: viaje.dia_id,
+                nombre: viaje.nombre,
+                puntosDeInteres: [],
+            });
+            answer = { error: false, codigo: 200, mensaje: "Viaje encontrado", data_viaje: [excursion] }
+        });
+        response.send(answer)
+    })
+}
 
 function getPIOfDay(req, response) {
     let answer;
@@ -217,20 +164,20 @@ function postViaje(req, response) {
 function postDia(req, res) {
     const sql = "INSERT INTO nomads.dias (nombre, viaje_id) VALUES (?, ?)";
     const values = [req.body.nombre, req.body.viaje_id];
-    
-    connection.query(sql, values, (err, result) => {
-      if (err) {
-        console.error(err);
-        res.status(500).json({ error: true, codigo: 500, mensaje: 'Error al insertar día en la base de datos', data: null});
-      } else {
-        res.status(201).json({ error: false, codigo: 201, mensaje: 'Día insertado correctamente', data: { id: result.insertId } });
-      }
-    });
-  }
-  
-  
 
-  function postPI(req, res) {
+    connection.query(sql, values, (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(500).json({ error: true, codigo: 500, mensaje: 'Error al insertar día en la base de datos', data: null });
+        } else {
+            res.status(201).json({ error: false, codigo: 201, mensaje: 'Día insertado correctamente', data: { id: result.insertId } });
+        }
+    });
+}
+
+
+
+function postPI(req, res) {
     let corLong;
     let corLat;
     const url = `https://photon.komoot.io/api/?q=${req.body.nombre}`
@@ -238,84 +185,84 @@ function postDia(req, res) {
         protocol: "https:",
         headers: { "Content-type": "application/json; charset = UTF-8" },
         method: "GET",
-      };
-      
-    fetch( url, params)
-    .then(function (data){
-        return data.json()
-    })
-    .then(function(result){
-        corLat = result.features[0].geometry.coordinates[0];
-        corLong = result.features[0].geometry.coordinates[1];
-        console.log(corLat);
-        console.log(corLong);
-        const sql = "INSERT INTO nomads.puntos_de_interes (nombre, foto, dia_id, corLong, corLat) VALUES (?, ?, ?, ?, ?)";
-    const values = [req.body.nombre, req.body.foto, req.body.dia_id, corLong, corLat];
-  
-    connection.query(sql, values, (err, result) => {
-      if (err) {
-        console.error(err);
-        res.status(500).json({ error: true, codigo: 500, mensaje: 'Error al añadir punto de interés a la base de datos' });
-      } else {
-        if (result.insertId) {
-            res.status(201).json({ error: false, codigo: 201, mensaje: String(result.insertId), data: { id: result.insertId } });
-        }
-        else {
-        res.status(201).json({ error: true, codigo: 201, mensaje:"-1", data: { id: result.insertId } });
+    };
 
-        }
-      }
-    });
-    })
-  }
-  
-  function viajeID(req, response) {
+    fetch(url, params)
+        .then(function (data) {
+            return data.json()
+        })
+        .then(function (result) {
+            corLat = result.features[0].geometry.coordinates[0];
+            corLong = result.features[0].geometry.coordinates[1];
+            console.log(corLat);
+            console.log(corLong);
+            const sql = "INSERT INTO nomads.puntos_de_interes (nombre, foto, dia_id, corLong, corLat) VALUES (?, ?, ?, ?, ?)";
+            const values = [req.body.nombre, req.body.foto, req.body.dia_id, corLong, corLat];
+
+            connection.query(sql, values, (err, result) => {
+                if (err) {
+                    console.error(err);
+                    res.status(500).json({ error: true, codigo: 500, mensaje: 'Error al añadir punto de interés a la base de datos' });
+                } else {
+                    if (result.insertId) {
+                        res.status(201).json({ error: false, codigo: 201, mensaje: String(result.insertId), data: { id: result.insertId } });
+                    }
+                    else {
+                        res.status(201).json({ error: true, codigo: 201, mensaje: "-1", data: { id: result.insertId } });
+
+                    }
+                }
+            });
+        })
+}
+
+function viajeID(req, response) {
     let sql = "SELECT * FROM nomads.viajes WHERE viaje_id = (SELECT MAX(viaje_id) FROM nomads.viajes)"
     connection.query(sql, (err, res) => {
-        if(err){
+        if (err) {
             console.log(err);
             respuesta = { error: true, codigo: 200, mensaje: 'No encontrado', data_viaje: null }
         } else {
             console.log(res);
-            respuesta = { error: false, codigo: 200, mensaje: String(res[0].viaje_id),  data_viaje: res }
+            respuesta = { error: false, codigo: 200, mensaje: String(res[0].viaje_id), data_viaje: res }
         }
         response.send(respuesta)
     })
-  }
-  //MODIFICAR VIAJE Y DIA
+}
+//MODIFICAR VIAJE Y DIA
 
-  function modViaje(req, response) {
-        let params = [req.body.titulo,
-                                req.body.descripcion,
-                                req.body.ubicacion,
-                                req.body.foto,
-                                req.body.n_dias_viaje,
-                                req.body.viaje_id]
-        let sql = "UPDATE nomads.viajes SET titulo = COALESCE(?, titulo), descripcion = COALESCE(?, descripcion), ubicacion = COALESCE(?, ubicacion), foto = COALESCE(?, foto), n_dias_viaje = COALESCE(?, n_dias_viaje) WHERE (viaje_id = ?);";
-        let answer;
-        connection.query(sql, params, (err, res) => {
-            if (err) {
-                answer =  {error: true, code: 200, message: "wrong db connection", data: res};
-                console.log(err);
+function modViaje(req, response) {
+    let params = [req.body.titulo,
+    req.body.descripcion,
+    req.body.ubicacion,
+    req.body.foto,
+    req.body.n_dias_viaje,
+    req.body.viaje_id]
+    let sql = "UPDATE nomads.viajes SET titulo = COALESCE(?, titulo), descripcion = COALESCE(?, descripcion), ubicacion = COALESCE(?, ubicacion), foto = COALESCE(?, foto), n_dias_viaje = COALESCE(?, n_dias_viaje) WHERE (viaje_id = ?);";
+    let answer;
+    connection.query(sql, params, (err, res) => {
+        if (err) {
+            answer = { error: true, code: 200, message: "wrong db connection", data: res };
+            console.log(err);
+        }
+        else {
+            if (res.affectedRows) {
+                answer = { error: false, codigo: 200, mensaje: String(res.affectedRows), data_viaje: null }
             }
             else {
-                if (res.affectedRows) {
-                    answer = { error: false, codigo: 200, mensaje: String(res.affectedRows), data_viaje: null }
-                }
-                else {
-                    answer = {error: true, code: 200, message: "0", data_viaje:[null]}
-                }
+                answer = { error: true, code: 200, message: "0", data_viaje: [null] }
             }
-            response.send(answer)
-            // in front, succesful edit is when message === "1", and failed edit is message === "0"
-        })
-    }
+        }
+        response.send(answer)
+        // in front, succesful edit is when message === "1", and failed edit is message === "0"
+    })
+}
 
-    function modPI(req, response) {
-        let params =[req.body.nombre,
-                    req.body.foto]
-        let sql =  ""
-    }
+function modPI(req, response) {
+    let params = [req.body.nombre,
+    req.body.foto]
+    let sql = ""
+}
 
 // VIAJES POR DESTINO Y DIAS----------------------------------------
 function viajes(request, response) {
@@ -387,6 +334,6 @@ function removeLike(req, res) {
     })
 }
 
-module.exports = {getTopViajes, getStartViajes, getTopViajesLog, getTopNomads, getPIOfDay, viajes, postViaje, addLike, removeLike, postDia, postPI, viajeID, modViaje}
+module.exports = { getTopViajes, getStartViajes, getDiasOfViaje,  getTopViajesLog, getTopNomads, getPIOfDay, viajes, postViaje, addLike, removeLike, postDia, postPI, viajeID, modViaje }
 
 
