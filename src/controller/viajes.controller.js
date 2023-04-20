@@ -389,6 +389,20 @@ function removeLike(req, res) {
     })
 }
 
-module.exports = { getTopViajes, getStartViajes, getDiasOfViaje, getTopViajesLog, getTopNomads, getPIOfDay, viajes, postViaje, addLike, removeLike, postDia, postPI, viajeID, modViaje, modPI }
+function viajeNo(req, res){
+    let params = [req.body.viaje_id]
+    let sql ="DELETE FROM `nomads`.`viajes` WHERE `viaje_id` = ?"
+    connection.query(sql, params, (err, res) => {
+        if (err) {
+            console.log(err);
+            respuesta = { error: true, codigo: 200, mensaje: 'No encontrado', data: null, userdata: null }
+        } else {
+            answer = { error: false, code: 200, message: String(res.affectedRows), data: res }
+        }
+    })
+
+}
+
+module.exports = { getTopViajes, getStartViajes, getDiasOfViaje, getTopViajesLog, getTopNomads, getPIOfDay, viajes, postViaje, addLike, removeLike, postDia, postPI, viajeID, modViaje, modPI, viajeNo }
 
 
