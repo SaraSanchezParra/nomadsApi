@@ -2,77 +2,81 @@ const connection = require("../database");
 const { User } = require("../models/user");
 
 
+
 function userFound(request, response) {
     
-    let respuesta;
-    let params = [request.query.username]
-    let sql = "SELECT user_id, username, name, surname, email, descripcion, photo FROM nomads.user WHERE username = ?"
-    let sql2 = `SELECT viaje_id, titulo,v.descripcion,foto, v.user_id_propietario, n_likes as likes FROM nomads.viajes as v JOIN nomads.user as u ON(v.user_id_propietario=u.user_id) WHERE v.user_id_propietario = ?`;
+  let respuesta;
+  let params = [request.query.username]
+  let sql = "SELECT user_id, username, name, surname, email, descripcion, photo FROM nomads.user WHERE username = ?"
+  let sql2 = `SELECT viaje_id, titulo,v.descripcion,foto, v.user_id_propietario, u.photo as user_foto, n_likes as likes FROM nomads.viajes as v JOIN nomads.user as u ON(v.user_id_propietario=u.user_id) WHERE v.user_id_propietario = ?`;
 
-    let sql3 = `SELECT v.viaje_id, titulo, v.descripcion,foto, v.user_id_propietario, u.photo as user_foto, n_likes as likes FROM nomads.favoritos as f JOIN nomads.viajes as v ON(f.viaje_id_fav= v.viaje_id) Join nomads.user as u ON (v.user_id_propietario = u.user_id) WHERE user_id_fav = ?`;
+  let sql3 = `SELECT v.viaje_id, titulo, v.descripcion,foto, v.user_id_propietario, u.photo as user_foto, n_likes as likes FROM nomads.favoritos as f JOIN nomads.viajes as v ON(f.viaje_id_fav= v.viaje_id) Join nomads.user as u ON (v.user_id_propietario = u.user_id) WHERE user_id_fav = ?`;
 
- 
-    console.log(sql);
 
-    connection.query(sql,params, function(err, result){
-        if(err){
-            console.log(err);
-            respuesta = { error: true, codigo: 200, mensaje: 'Error en conexión', data_user: null }
-        } else {
-          if (result.length === 0) {
-            respuesta = { error: true, codigo: 200, mensaje: 'Ningún usuario encontrado',  data_user: null }
+  console.log(sql);
+
+  connection.query(sql,params, function(err, result){
+      if(err){
+          console.log(err);
+          respuesta = { error: true, codigo: 200, mensaje: 'Error en conexión', data_user: null }
+      } else {
+        if (result.length === 0) {
+          respuesta = { error: true, codigo: 200, mensaje: 'Ningún usuario encontrado',  data_user: null }
+          response.send(respuesta);
+        }
+        else {
+          console.log(result);{  // respuesta = {error:false, codigo:200, mensaje:'logueado', data_user:res}
+            let user = new User(result[0].user_id, result[0].name, result[0].surname, result[0].email,
+              result[0].username, result[0].descripcion, result[0].photo, [], []);
+            params = [user.user_id];
+    
+            connection.query(sql2, params, (err, resViajes) => {
+              if (err) {
+                console.log(err);
+                respuesta = {
+                  error: true,
+                  codigo: 200,
+                  mensaje: "viaje no encontrado",
+                  data: resViajes,
+                };
+              } else {
+                user.misViajes = resViajes;
+                console.log(resViajes)
+                params = [user.user_id];
+                connection.query(sql3, params, (err, resFavoritos) => {
+                  if (err) {
+                    console.log(err);
+                    respuesta = {
+                      error: true,
+                      codigo: 200,
+                      mensaje: "no hay favoritos",
+                      data: resFavoritos,
+                    };
+                  } else {
+                    user.favs = resFavoritos
+                    respuesta = {error:false, codigo:200, mensaje:'encontrado', data_user:[user]}
+                       
+                    response.send(respuesta);
+                  }
+                });
+    
+              }
+            });
+          } 
+        
+            console.log(respuesta);
           }
-          else {
-            console.log(result);{  // respuesta = {error:false, codigo:200, mensaje:'logueado', data_user:res}
-              let user = new User(result[0].user_id, result[0].name, result[0].surname, result[0].email,
-                result[0].username, result[0].descripcion, result[0].photo, [], []);
-              params = [user.user_id];
-      
-              connection.query(sql2, params, (err, resViajes) => {
-                if (err) {
-                  console.log(err);
-                  respuesta = {
-                    error: true,
-                    codigo: 200,
-                    mensaje: "viaje no encontrado",
-                    data: resViajes,
-                  };
-                } else {
-                  user.misViajes = resViajes;
-                  console.log(resViajes)
-                  params = [user.user_id];
-                  connection.query(sql3, params, (err, resFavoritos) => {
-                    if (err) {
-                      console.log(err);
-                      respuesta = {
-                        error: true,
-                        codigo: 200,
-                        mensaje: "no hay favoritos",
-                        data: resFavoritos,
-                      };
-                    } else {
-                      user.favs = resFavoritos
-                      respuesta = {error:false, codigo:200, mensaje:'encontrado', data_user:[user]}
-                         
-                      response.send(respuesta);
-                    }
-                  });
-      
-                }
-              });
-            } 
-          
-              console.log(respuesta);
-            }
-      
-      
-          }
-        });
-    //         respuesta = { error: false, codigo: 200, mensaje: 'Usuario encontrado',  data_user: result }
-    //       }
-    //     }
-    //     response.send(respuesta)
-    // })
+    
+    
+        }
+       
+      }
+      );
+  //         respuesta = { error: false, codigo: 200, mensaje: 'Usuario encontrado',  data_user: result }
+  //       }
+  //     }
+  //     response.send(respuesta)
+  // })
 }
 
 
