@@ -5,7 +5,7 @@ const mensajesCtrl = require("../controller/mensajes.controller")
 
 router.get("/mensajes",mensajesCtrl.getMessages)
 
-
+router.post("/mensajes",mensajesCtrl.postMessages)
 
 
 
