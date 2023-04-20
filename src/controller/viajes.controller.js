@@ -81,11 +81,10 @@ function getPIOfDay(req, response) {
 function getTopViajes(request, response) {
     let respuesta;
     let sql =
-        `SELECT viajes.titulo, viajes.descripcion, viajes.foto,user_id_propietario as user_id, viajes.ubicacion, user.photo AS user_foto, viajes.viaje_id, COUNT(*) AS likes FROM favoritos 
-        JOIN viajes ON (viajes.viaje_id = favoritos.viaje_id_fav) 
+        `SELECT viajes.titulo, viajes.descripcion, viajes.foto,user_id_propietario as user_id, viajes.ubicacion, user.photo AS user_foto, viajes.viaje_id, viajes.n_likes AS likes FROM viajes
         JOIN user ON (user.user_id = viajes.user_id_propietario) 
         GROUP BY viajes.viaje_id
-        ORDER BY likes DESC LIMIT 3`;
+        ORDER BY n_likes DESC LIMIT 3`;
 
     connection.query(sql, function (err, result) {
         if (err) {
@@ -108,14 +107,12 @@ function getTopViajes(request, response) {
 function getTopViajesLog(request, response) {
 
     let respuesta;
-    let sql = `SELECT viajes.titulo, viajes.descripcion, viajes.foto, user.photo AS user_foto, user.user_id, viajes.viaje_id, COUNT(*) AS likes 
-    FROM favoritos 
-    JOIN viajes ON (viajes.viaje_id = favoritos.viaje_id_fav) 
+    let sql = `SELECT viajes.titulo, viajes.descripcion, viajes.foto, user.photo AS user_foto, user.user_id, viajes.viaje_id, viajes.n_likes AS likes 
+    FROM viajes  
     JOIN user ON (user.user_id = viajes.user_id_propietario)
     GROUP BY viajes.viaje_id 
-    ORDER BY likes DESC 
-    LIMIT 4
-    `;
+    ORDER BY n_likes DESC 
+    LIMIT 4`;
 
     connection.query(sql, function (err, result) {
         if (err) {
@@ -343,7 +340,12 @@ function viajes(request, response) {
 function getTopNomads(request, response) {
 
     let respuesta;
-    let sql = "SELECT user.photo, user.username, COUNT(*) AS likes FROM favoritos JOIN viajes ON viajes.viaje_id = favoritos.viaje_id_fav JOIN user ON user.user_id = viajes.user_id_propietario GROUP BY user.user_id, user.photo ORDER BY likes DESC LIMIT 4";
+    let sql = `SELECT user.photo, user.username, COUNT(viajes.n_likes) AS likes
+    FROM viajes
+    JOIN user ON user.user_id = viajes.user_id_propietario
+    GROUP BY user.user_id, user.photo
+    ORDER BY likes DESC
+    LIMIT 4`;
 
     connection.query(sql, function (err, result) {
         if (err) {
@@ -358,24 +360,60 @@ function getTopNomads(request, response) {
 }
 
 function addLike(req, response) {
-    let sql = "INSERT INTO nomads.favoritos (user_id_fav, viaje_id_fav) VALUES ('" + req.body.user_id + "', '" + req.body.viaje_id + "'); ";
-    let answer;
-    connection.query(sql, (err, res) => {
-        if (err) {
-            console.log(err);
-            respuesta = { error: true, codigo: 200, mensaje: 'Not liked', data: null, userdata: null }
+    let sqlCheck = `SELECT COUNT(*) AS count FROM nomads.favoritos WHERE user_id_fav = ${req.body.user_id} AND viaje_id_fav = ${req.body.viaje_id}`;
+    let respuesta;
+    connection.query(sqlCheck, (checkErr, checkRes) => {
+        if (checkErr) {
+            console.log(checkErr);
+            respuesta = { error: true, codigo: 200, mensaje: 'Not liked', data: null, userdata: null };
+            return response.send(respuesta);
         } else {
-            if (res.insertId) {
-                answer = { error: true, codigo: 200, mensaje: String(res.insertId), data_viaje: null }
-            }
-            else {
-                answer = { error: true, code: 200, message: "-1", data_viaje: [null] }
+            let count = checkRes[0].count;
+            if (count > 0) {
+                let deleteSql = `DELETE FROM nomads.favoritos WHERE user_id_fav = ${req.body.user_id} AND viaje_id_fav = ${req.body.viaje_id}`;
+                connection.query(deleteSql, (deleteErr, deleteRes) => {
+                    if (deleteErr) {
+                        console.log(deleteErr);
+                        respuesta = { error: true, codigo: 200, mensaje: 'Not unliked', data_viaje: null, userdata: null };
+                        return response.send(respuesta);
+                    } else {
+                        let updateSql = `UPDATE nomads.viajes SET n_likes = n_likes - 1 WHERE viaje_id = ${req.body.viaje_id}`;
+                        connection.query(updateSql, (updateErr, updateRes) => {
+                            if (updateErr) {
+                                console.log(updateErr);
+                                respuesta = { error: true, codigo: 200, mensaje: 'Not unliked', data_viaje: null, userdata: null };
+                                return response.send(respuesta);
+                            } else {
+                                respuesta = { error: false, codigo: 200, mensaje: 'Unliked', data_viaje: null };
+                                return response.send(respuesta);
+                            }
+                        });
+                    }
+                });
+            } else {
+                let insertSql = `INSERT INTO nomads.favoritos (user_id_fav, viaje_id_fav) VALUES (${req.body.user_id}, ${req.body.viaje_id})`;
+                connection.query(insertSql, (insertErr, insertRes) => {
+                    if (insertErr) {
+                        console.log(insertErr);
+                        respuesta = { error: true, codigo: 200, mensaje: 'Not liked', data: null, userdata: null };
+                        return response.send(respuesta);
+                    } else {
+                        let updateSql = `UPDATE nomads.viajes SET n_likes = n_likes + 1 WHERE viaje_id = ${req.body.viaje_id}`;
+                        connection.query(updateSql, (updateErr, updateRes) => {
+                            if (updateErr) {
+                                console.log(updateErr);
+                                respuesta = {
+                                    error: true, codigo: 200, mensaje: 'Not liked',
+                                }
+                            }
+                        })
+                        response.send(respuesta)
+                    }
+                })
             }
         }
-        response.send(answer)
     })
 }
-
 function removeLike(req, res) {
     let params = [req.body.viaje_id, req.body.user_id]
     let sql = "DELETE FROM nomads.favoritos WHERE (viaje_id_fav = ?) AND (user_id_fav = ?);"
