@@ -31,4 +31,6 @@ router.put("/modificarViaje", viajesCTRL.modViaje)
 
 router.get("/addViaje", viajesCTRL.viajeID)
 
+router.put("/modPI", viajesCTRL.modPI)
+
 module.exports = router

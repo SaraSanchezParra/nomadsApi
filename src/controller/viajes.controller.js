@@ -17,7 +17,7 @@ function getDiasOfViaje(req, response) {
     let answer;
     let viaje_id = req.query.viaje_id;
     let params = [viaje_id]
-    let sql = "SELECT v.viaje_id, titulo, ubicacion, foto, user_id_propietario as user_id, n_likes as likes, u.photo as user_foto, d.nombre, d.dia_id, corLat, corLong FROM nomads.viajes as v Join nomads.dias as d ON (v.viaje_id = d.viaje_id) Join nomads.user as u ON (v.user_id_propietario= u.user_id) Where v.viaje_id = ?;";
+    let sql = "SELECT titulo, ubicacion, foto, user_id_propietario as user_id, n_likes as likes, u.photo as user_foto, d.nombre, d.dia_id, corLat, corLong FROM nomads.viajes as v Join nomads.dias as d ON (v.viaje_id = d.viaje_id) Join nomads.user as u ON (v.user_id_propietario= u.user_id) Where v.viaje_id = ?;";
     connection.query(sql, params, (err, res) => {
         if (err) {
             answer = { error: true, codigo: 200, mensaje: err, data_viaje: [null] };
@@ -26,12 +26,13 @@ function getDiasOfViaje(req, response) {
 
             //  create Viaje
 
-            // console.log(res);
+            console.log(res);
 
             let datos = res[0]
-
+            console.log("Over here");
+            console.log(datos);
             excursion = new Viaje(
-                datos.viaje_id,
+                viaje_id,
                 datos.titulo,
                 datos.descripcion,
                 datos.ubicacion,
@@ -43,7 +44,7 @@ function getDiasOfViaje(req, response) {
                 datos.corLat,
                 datos.corLong)
         }
-
+        console.log("estoy aqui");
         console.log(excursion);
 
         // create days
@@ -131,34 +132,57 @@ function getTopViajesLog(request, response) {
 }
 
 function postViaje(req, response) {
-    let sql = "INSERT INTO nomads.viajes (titulo, descripcion, ubicacion, foto, user_id_propietario, n_dias_viaje, n_likes)" + "VALUES ('"
-        + req.body.titulo +
-        "', '" + req.body.descripcion
-        + "', '" + req.body.ubicacion
-        + "', '" + req.body.foto
-        + "', '" + req.body.user_id
-        + "', '" + req.body.n_dias_viaje
-        + "', '" + 0 + "');";
+    // n_dias falta
+    let corLong;
+    let corLat;
+    const url = `https://photon.komoot.io/api/?q=${req.body.nombre}`
+    let params = {
+        protocol: "https:",
+        headers: { "Content-type": "application/json; charset = UTF-8" },
+        method: "GET",
+    };
 
-    let answer;
-    connection.query(sql, (err, res) => {
-        console.log(sql);
-        if (err) {
-            answer = { error: true, codigo: 200, mensaje: 'No encontrado', data: null, userdata: null }
-        }
-        else {
-            if (res.insertId) {
-                answer = { error: true, codigo: 200, mensaje: String(res.insertId), data_viaje: null }
-            }
-            else {
-                answer = { error: true, code: 200, message: "-1", data_viaje: [null] }
-            }
-        }
-        response.send(answer)
-    })
+    fetch(url, params)
+        .then(function (data) {
+            return data.json()
+        })
+        .then(function (result) {
+            corLat = result.features[0].geometry.coordinates[0];
+            corLong = result.features[0].geometry.coordinates[1];
+            console.log(corLat);
+            console.log(corLong);
+            let sql = "INSERT INTO nomads.viajes (titulo, descripcion, ubicacion, foto, user_id_propietario, n_dias_viaje, n_likes, corLong, corLat)" + "VALUES ('"
+                + req.body.titulo +
+                "', '" + req.body.descripcion
+                + "', '" + req.body.ubicacion
+                + "', '" + req.body.foto
+                + "', '" + req.body.user_id_propietario
+                + "', '" + req.body.n_dias_viaje
+                + "', '" + 0 + "', '" + corLong + "', '" + corLat + "');";
+
+            let answer;
+            console.log(req.body.user_id_propietario);
+            connection.query(sql, (err, res) => {
+                console.log("Post Viaje");
+                console.log(sql);
+                if (err) {
+                    answer = { error: true, codigo: 200, mensaje: 'No encontrado', data: null, userdata: null }
+                    console.log(err);
+                }
+                else {
+                    if (res.insertId) {
+                        answer = { error: true, codigo: 200, mensaje: String(res.insertId), data_viaje: null }
+                    }
+                    else {
+                        answer = { error: true, code: 200, message: "-1", data_viaje: [null] }
+                    }
+                }
+                response.send(answer)
+                console.log(answer);
+            })
+        })
+
 }
-
-
 
 // añadir día y punto interés
 
@@ -169,14 +193,12 @@ function postDia(req, res) {
     connection.query(sql, values, (err, result) => {
         if (err) {
             console.error(err);
-            res.status(500).json({ error: true, codigo: 500, mensaje: 'Error al insertar día en la base de datos', data: null });
+            res.status(500).json({ error: true, codigo: 500, mensaje: '0', data: null });
         } else {
-            res.status(201).json({ error: false, codigo: 201, mensaje: 'Día insertado correctamente', data: { id: result.insertId } });
+            res.status(201).json({ error: false, codigo: 201, mensaje: String(result.insertId), data: { id: result.insertId } });
         }
     });
 }
-
-
 
 function postPI(req, res) {
     let corLong;
@@ -260,9 +282,41 @@ function modViaje(req, response) {
 }
 
 function modPI(req, response) {
-    let params = [req.body.nombre,
-    req.body.foto]
-    let sql = ""
+    let answer;
+    let corLong;
+    let corLat;
+    const url = `https://photon.komoot.io/api/?q=${req.body.nombre}`
+    let params = {
+        protocol: "https:",
+        headers: { "Content-type": "application/json; charset = UTF-8" },
+        method: "GET",
+    };
+
+    fetch(url, params)
+        .then(function (data) {
+            return data.json()
+        })
+        .then(function (result) {
+            corLat = result.features[0].geometry.coordinates[0];
+            corLong = result.features[0].geometry.coordinates[1];
+            console.log(corLat);
+            console.log(corLong);
+            let params = [req.body.nombre,
+            req.body.foto,
+            req.body.punto_interes_id]
+            let sql = `UPDATE nomads.puntos_de_interes SET nombre = COALESCE(?, nombre), foto =COALESCE(?, foto), corLong = '${corLong}', corLat = '${corLat}' WHERE punto_interes_id = ?`
+            connection.query(sql, params, (err, result) => {
+                if (err) {
+                    answer = { error: true, code: 200, message: "wrong db connection", data: res };
+                    console.log(err);
+                }
+                else {
+                    if (result.affectedRows != 0) {
+                        answer = { error: false, code: 200, message: "Se ha editado", data: res }
+                    }
+                }
+            })
+        })
 }
 
 // VIAJES POR DESTINO Y DIAS----------------------------------------
@@ -335,6 +389,6 @@ function removeLike(req, res) {
     })
 }
 
-module.exports = { getTopViajes, getStartViajes, getDiasOfViaje,  getTopViajesLog, getTopNomads, getPIOfDay, viajes, postViaje, addLike, removeLike, postDia, postPI, viajeID, modViaje }
+module.exports = { getTopViajes, getStartViajes, getDiasOfViaje, getTopViajesLog, getTopNomads, getPIOfDay, viajes, postViaje, addLike, removeLike, postDia, postPI, viajeID, modViaje, modPI }
 
 
