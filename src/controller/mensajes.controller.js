@@ -24,9 +24,24 @@ function getMessages(request,response)
 
 function postMessages(request,response)
 {
-  let params=[request.body.mensaje_body]
-  let sql = `INSERT INTO nomads.mensaje ()`
+  let params=[request.body.emisor,request.body.mensaje_body,request.body.chat_id]
+  let sql = `INSERT INTO nomads.mensajes (emisor, mensaje_body, chat_id) VALUES (?, ?, ?)`
+  connection.query(sql,params,(err,resp)=>
+    {
+    if(err){
+      console.log(err);
+      respuesta = {error:true, codigo:200, mensaje:'mensaje no insertado', data:resp}
+    } else {
+        respuesta = {error:false, codigo:200, mensaje:'mensaje insertado', data:resp}
+    } 
+    response.send(respuesta)
+  })
+
 }
 
 
-module.exports={getMessages}
+
+
+
+
+module.exports={getMessages,postMessages}

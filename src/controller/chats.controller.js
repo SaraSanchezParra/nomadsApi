@@ -46,7 +46,7 @@ function getChats(request,response){
 
 function getChat(request,response){
   let params = [request.query.user_id_creador,request.query.user_id_participante,request.query.user_id_participante, request.query.user_id_creador];
-  let sql=`SELECT chat_id FROM chats
+  let sql=`SELECT * FROM chats
            WHERE (chats.user_id_creador=? AND chats.user_id_participante=?) 
            OR (chats.user_id_participante=? AND chats.user_id_creador=?)`;
 
