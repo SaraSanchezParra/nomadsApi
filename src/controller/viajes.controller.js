@@ -215,9 +215,9 @@ async function getCoordenadas(punto, insert_id, pIndex, len) {
             }
             else {
                 answer = ({ error: true, codigo: 201, mensaje: "-1", data: { id: result.insertId } });
-
             }
         }
+        console.log(answer);
     });
 
 }
@@ -233,10 +233,8 @@ function postDia(req, res) {
             res.status(500).json({ error: true, codigo: 500, mensaje: '0', data: null });
         } else {
             const dia_id = result.insertId;
-            let sqlPuntos = ;
-            let values = [];
             req.body.puntosDeInteres.forEach((punto,index) => {
-                getCoordenadas(punto, dia_id,index, req.body.puntosDeInteres.length)
+                getCoordenadas(punto, dia_id ,index, req.body.puntosDeInteres.length)
                 .then((result) => 
                 {
                     console.log(result);
