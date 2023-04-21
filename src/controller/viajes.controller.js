@@ -389,17 +389,24 @@ function removeLike(req, res) {
     })
 }
 
-function viajeNo(req, res){
-    let viaje_id = req.params.viaje_id
-    let params = [viaje_id]
-    let sql ="DELETE FROM nomads.viajes WHERE viaje_id = ?"
+function viajeNo(req, response){
+    
+    let params = [ req.body.viaje_id]
+    let sql ="DELETE FROM viajes WHERE (viaje_id = ?)"
     connection.query(sql, params, (err, res) => {
+
         if (err) {
             console.log(err);
-            respuesta = { error: true, codigo: 200, mensaje: 'No encontrado', data: null, userdata: null }
+            answer = { error: true, codigo: 200, mensaje: 'No encontrado', data: null, userdata: null }
         } else {
-            answer = { error: false, code: 200, message: String(res.affectedRows), data: res }
+            if (res.affectedRows === 1) {
+                answer = { error: false, code: 200, message: String(res.affectedRows), data: res }
+            }
+            else {
+                answer = { error: true, codigo: 200, mensaje: 'No encontrado', data: null, userdata: null }
+            }
         }
+        response.send(answer)
     })
 
 }
