@@ -17,7 +17,7 @@ function getDiasOfViaje(req, response) {
     let answer;
     let viaje_id = req.query.viaje_id;
     let params = [viaje_id]
-    let sql = "SELECT titulo, ubicacion, foto, user_id_propietario as user_id, n_likes as likes, u.photo as user_foto, d.nombre, d.dia_id, corLat, corLong FROM nomads.viajes as v Join nomads.dias as d ON (v.viaje_id = d.viaje_id) Join nomads.user as u ON (v.user_id_propietario= u.user_id) Where v.viaje_id = ?;";
+    let sql = "SELECT titulo, ubicacion, foto, v.descripcion, user_id_propietario as user_id, n_likes as likes, u.photo as user_foto, d.nombre, d.dia_id, corLat, corLong FROM nomads.viajes as v Join nomads.dias as d ON (v.viaje_id = d.viaje_id) Join nomads.user as u ON (v.user_id_propietario= u.user_id) Where v.viaje_id = ?;";
     connection.query(sql, params, (err, res) => {
         if (err) {
             answer = { error: true, codigo: 200, mensaje: err, data_viaje: [null] };
@@ -183,57 +183,87 @@ function postViaje(req, response) {
 
 // añadir día y punto interés
 
-function postDia(req, res) {
-    const sql = "INSERT INTO nomads.dias (nombre, viaje_id) VALUES (?, ?)";
-    const values = [req.body.nombre, req.body.viaje_id];
-
-    connection.query(sql, values, (err, result) => {
-        if (err) {
-            console.error(err);
-            res.status(500).json({ error: true, codigo: 500, mensaje: '0', data: null });
-        } else {
-            res.status(201).json({ error: false, codigo: 201, mensaje: String(result.insertId), data: { id: result.insertId } });
-        }
-    });
-}
-
-function postPI(req, res) {
+async function getCoordenadas(punto, insert_id, pIndex, len) {
     let corLong;
     let corLat;
-    const url = `https://photon.komoot.io/api/?q=${req.body.nombre}`
+    console.log(punto.nombre);
+    const url = `https://photon.komoot.io/api/?q=${punto.nombre}`
     let params = {
         protocol: "https:",
         headers: { "Content-type": "application/json; charset = UTF-8" },
         method: "GET",
     };
 
-    fetch(url, params)
-        .then(function (data) {
-            return data.json()
-        })
-        .then(function (result) {
-            corLat = result.features[0].geometry.coordinates[0];
-            corLong = result.features[0].geometry.coordinates[1];
-            console.log(corLat);
-            console.log(corLong);
-            const sql = "INSERT INTO nomads.puntos_de_interes (nombre, foto, dia_id, corLong, corLat) VALUES (?, ?, ?, ?, ?)";
-            const values = [req.body.nombre, req.body.foto, req.body.dia_id, corLong, corLat];
+    let data = await fetch(url, params);
+    let result = await data.json();
 
-            connection.query(sql, values, (err, result) => {
-                if (err) {
-                    console.error(err);
-                    res.status(500).json({ error: true, codigo: 500, mensaje: 'Error al añadir punto de interés a la base de datos' });
-                } else {
-                    if (result.insertId) {
-                        res.status(201).json({ error: false, codigo: 201, mensaje: String(result.insertId), data: { id: result.insertId } });
-                    }
-                    else {
-                        res.status(201).json({ error: true, codigo: 201, mensaje: "-1", data: { id: result.insertId } });
+    console.log(result);
+    corLat = result.features[0].geometry.coordinates[0];
+    corLong = result.features[0].geometry.coordinates[1];
+    console.log(corLat);
+    console.log(corLong);
+    values = [punto.nombre, punto.foto, insert_id, corLong, corLat];
+    
+    if (pIndex == len) {
+        sqlToADD = (" (?, ?, ?, ?, ?);")
+    }
+    else {
+            sqlToADD = (" (?, ?, ?, ?, ?),")
+    }
+    
+    return {sqlToADD: sqlToADD, pointValues: values}
 
-                    }
-                }
-            });
-        })
+}
+
+
+function postDia(req, res) {
+    const sql = "INSERT INTO nomads.dias (nombre, viaje_id) VALUES (?, ?)";
+    const values = [req.body.nombre, req.body.viaje_id];
+    console.log(req.body);
+    connection.query(sql, values, (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(500).json({ error: true, codigo: 500, mensaje: '0', data: null });
+        } else {
+            const dia_id = result.insertId;
+            let sqlPuntos = "INSERT INTO nomads.puntos_de_interes (nombre, foto, dia_id, corLong, corLat) VALUES";
+            let values = [];
+            req.body.puntosDeInteres.forEach((punto,index) => {
+                getCoordenadas(punto, dia_id,index, req.body.puntosDeInteres.length)
+                .then(({sqlToADD, pointValues}) => 
+                {
+                    console.log(result);
+                    values.push(pointValues)
+                    sqlPuntos+=sqlToADD;
+                    // Hacer un conexion query por punto de interes
+                })
+            })
+            console.log(values);
+            console.log(sqlPuntos);
+
+
+            // connection.query(sql, values, (err, result) => {
+            //     if (err) {
+            //         console.error(err);
+            //         answer = ({ error: true, codigo: 500, mensaje: 'Error al añadir punto de interés a la base de datos' });
+            //     } else {
+            //         if (result.insertId) {
+            //             insert_ids.push(result.insertId)
+            //         }
+            //         else {
+            //             answer = ({ error: true, codigo: 201, mensaje: "-1", data: { id: result.insertId } });
+
+            //         }
+            //     }
+            // });
+
+
+        }
+    });
+}
+
+function postPI(req, res) {
+
 }
 
 function viajeID(req, response) {
@@ -427,10 +457,10 @@ function removeLike(req, res) {
     })
 }
 
-function viajeNo(req, response){
-    
-    let params = [ req.body.viaje_id]
-    let sql ="DELETE FROM viajes WHERE (viaje_id = ?)"
+function viajeNo(req, response) {
+
+    let params = [req.body.viaje_id]
+    let sql = "DELETE FROM viajes WHERE (viaje_id = ?)"
     connection.query(sql, params, (err, res) => {
 
         if (err) {
