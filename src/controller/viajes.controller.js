@@ -360,76 +360,72 @@ function getTopNomads(request, response) {
 }
 
 function addLike(req, response) {
-    let sqlCheck = `SELECT COUNT(*) AS count FROM nomads.favoritos WHERE user_id_fav = ${req.body.user_id} AND viaje_id_fav = ${req.body.viaje_id}`;
     let respuesta;
-    connection.query(sqlCheck, (checkErr, checkRes) => {
-        if (checkErr) {
-            console.log(checkErr);
-            respuesta = { error: true, codigo: 200, mensaje: 'Not liked', data: null, userdata: null };
-            return response.send(respuesta);
-        } else {
-            let count = checkRes[0].count;
-            if (count > 0) {
-                let deleteSql = `DELETE FROM nomads.favoritos WHERE user_id_fav = ${req.body.user_id} AND viaje_id_fav = ${req.body.viaje_id}`;
-                connection.query(deleteSql, (deleteErr, deleteRes) => {
-                    if (deleteErr) {
-                        console.log(deleteErr);
-                        respuesta = { error: true, codigo: 200, mensaje: 'Not unliked', data_viaje: null, userdata: null };
-                        return response.send(respuesta);
-                    } else {
-                        let updateSql = `UPDATE nomads.viajes SET n_likes = n_likes - 1 WHERE viaje_id = ${req.body.viaje_id}`;
-                        connection.query(updateSql, (updateErr, updateRes) => {
-                            if (updateErr) {
-                                console.log(updateErr);
-                                respuesta = { error: true, codigo: 200, mensaje: 'Not unliked', data_viaje: null, userdata: null };
-                                return response.send(respuesta);
-                            } else {
-                                respuesta = { error: false, codigo: 200, mensaje: 'Unliked', data_viaje: null };
-                                return response.send(respuesta);
-                            }
-                        });
-                    }
-                });
-            } else {
-                let insertSql = `INSERT INTO nomads.favoritos (user_id_fav, viaje_id_fav) VALUES (${req.body.user_id}, ${req.body.viaje_id})`;
-                connection.query(insertSql, (insertErr, insertRes) => {
-                    if (insertErr) {
-                        console.log(insertErr);
-                        respuesta = { error: true, codigo: 200, mensaje: 'Not liked', data: null, userdata: null };
-                        return response.send(respuesta);
-                    } else {
-                        let updateSql = `UPDATE nomads.viajes SET n_likes = n_likes + 1 WHERE viaje_id = ${req.body.viaje_id}`;
-                        connection.query(updateSql, (updateErr, updateRes) => {
-                            if (updateErr) {
-                                console.log(updateErr);
-                                respuesta = {
-                                    error: true, codigo: 200, mensaje: 'Not liked',
-                                }
-                            }
-                        })
-                        response.send(respuesta)
-                    }
-                })
-            }
-        }
-    })
-}
-function removeLike(req, res) {
-    let params = [req.body.viaje_id, req.body.user_id]
-    let sql = "DELETE FROM nomads.favoritos WHERE (viaje_id_fav = ?) AND (user_id_fav = ?);"
-    connection.query(sql, params, (err, res) => {
+
+    let insertSql = `INSERT INTO nomads.favoritos (user_id_fav, viaje_id_fav) VALUES (${req.body.user_id}, ${req.body.viaje_id})`;
+    console.log("*********************************************************");
+    console.log(insertSql);
+
+    connection.query(insertSql, (err, res) => {
         if (err) {
             console.log(err);
-            respuesta = { error: true, codigo: 200, mensaje: 'No encontrado', data: null, userdata: null }
+            respuesta = { error: true, codigo: 200, mensaje: 'Not liked', data: null, userdata: null };
+            response.send(respuesta)
         } else {
-            answer = { error: false, code: 200, message: String(res.affectedRows), data: res }
+            let updateSql = `UPDATE nomads.viajes SET n_likes = n_likes + 1 WHERE viaje_id = ${req.body.viaje_id}`;
+            console.log(updateSql);
+            connection.query(updateSql, (err, res) => {
+                if (err) {
+                    console.log(err);
+                    respuesta = {error: true, codigo: 200, mensaje: 'Not liked',data: null, userdata: null }
+                    response.send(respuesta)
+                }
+                else {
+                    respuesta = {error: false, codigo: 200, mensaje: 'Liked',data: null, userdata: null }
+                    console.log(respuesta);
+                    response.send(respuesta)
+                }
+            }) 
         }
     })
 }
 
-function viajeNo(req, res){
+
+
+function removeLike(req, response) {
+    let respuesta;
+
+    let deleteSql = `DELETE FROM nomads.favoritos WHERE user_id_fav=${req.body.user_id} AND viaje_id_fav=${req.body.viaje_id}`;
+    console.log(deleteSql);
+
+    connection.query(deleteSql, (err, res) => {
+        if (err) {
+            console.log(err);
+            respuesta = { error: true, codigo: 200, mensaje: 'Error removing like', data: null, userdata: null };
+            response.send(respuesta)
+        } else {
+            let updateSql = `UPDATE nomads.viajes SET n_likes = n_likes - 1 WHERE viaje_id = ${req.body.viaje_id}`;
+            console.log(updateSql);
+            connection.query(updateSql, (err, res) => {
+                if (err) {
+                    console.log(err);
+                    respuesta = {error: true, codigo: 200, mensaje: 'Error removing like',data: null, userdata: null }
+                    response.send(respuesta)
+                }
+                else {
+                    respuesta = {error: false, codigo: 200, mensaje: 'Like removed',data: null, userdata: null }
+                    console.log(respuesta);
+                    response.send(respuesta)
+                }
+            }) 
+        }
+    })
+}
+
+
+function viajeNo(req, res) {
     let params = [req.body.viaje_id]
-    let sql ="DELETE FROM `nomads`.`viajes` WHERE `viaje_id` = ?"
+    let sql = "DELETE FROM `nomads`.`viajes` WHERE `viaje_id` = ?"
     connection.query(sql, params, (err, res) => {
         if (err) {
             console.log(err);
