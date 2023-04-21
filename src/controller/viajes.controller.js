@@ -202,16 +202,23 @@ async function getCoordenadas(punto, insert_id, pIndex, len) {
     corLong = result.features[0].geometry.coordinates[1];
     console.log(corLat);
     console.log(corLong);
+    let sql = "INSERT INTO nomads.puntos_de_interes (nombre, foto, dia_id, corLong, corLat) VALUES (?, ?, ?, ?, ?);"
     values = [punto.nombre, punto.foto, insert_id, corLong, corLat];
-    
-    if (pIndex == len) {
-        sqlToADD = (" (?, ?, ?, ?, ?);")
-    }
-    else {
-            sqlToADD = (" (?, ?, ?, ?, ?),")
-    }
-    
-    return {sqlToADD: sqlToADD, pointValues: values}
+
+    connection.query(sql, values, (err, result) => {
+        if (err) {
+            console.error(err);
+            answer = ({ error: true, codigo: 500, mensaje: 'Error al añadir punto de interés a la base de datos' });
+        } else {
+            if (result.insertId) {
+                insert_ids.push(result.insertId)
+            }
+            else {
+                answer = ({ error: true, codigo: 201, mensaje: "-1", data: { id: result.insertId } });
+
+            }
+        }
+    });
 
 }
 
@@ -226,36 +233,16 @@ function postDia(req, res) {
             res.status(500).json({ error: true, codigo: 500, mensaje: '0', data: null });
         } else {
             const dia_id = result.insertId;
-            let sqlPuntos = "INSERT INTO nomads.puntos_de_interes (nombre, foto, dia_id, corLong, corLat) VALUES";
+            let sqlPuntos = ;
             let values = [];
             req.body.puntosDeInteres.forEach((punto,index) => {
                 getCoordenadas(punto, dia_id,index, req.body.puntosDeInteres.length)
-                .then(({sqlToADD, pointValues}) => 
+                .then((result) => 
                 {
                     console.log(result);
-                    values.push(pointValues)
-                    sqlPuntos+=sqlToADD;
-                    // Hacer un conexion query por punto de interes
                 })
             })
-            console.log(values);
-            console.log(sqlPuntos);
-
-
-            // connection.query(sql, values, (err, result) => {
-            //     if (err) {
-            //         console.error(err);
-            //         answer = ({ error: true, codigo: 500, mensaje: 'Error al añadir punto de interés a la base de datos' });
-            //     } else {
-            //         if (result.insertId) {
-            //             insert_ids.push(result.insertId)
-            //         }
-            //         else {
-            //             answer = ({ error: true, codigo: 201, mensaje: "-1", data: { id: result.insertId } });
-
-            //         }
-            //     }
-            // });
+           
 
 
         }
