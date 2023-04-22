@@ -27,7 +27,7 @@ router.post("/addDia", viajesCTRL.postDia);
 
 router.post("/addPI", viajesCTRL.postPI);
 
-router.put("/modificarViaje", viajesCTRL.modViaje)
+router.put("/viaje", viajesCTRL.modViaje)
 
 router.get("/addViaje", viajesCTRL.viajeID)
 

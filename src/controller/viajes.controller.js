@@ -23,8 +23,8 @@ function getDiasOfViaje(req, response) {
             answer = { error: true, codigo: 200, mensaje: err, data_viaje: [null] };
         }
         else {
-
-            //  create Viaje
+            if (res.length != 0) {
+                //  create Viaje
 
             console.log(res);
 
@@ -33,18 +33,17 @@ function getDiasOfViaje(req, response) {
             console.log(datos);
             excursion = new Viaje(
                 viaje_id,
-                datos.titulo,
-                datos.descripcion,
-                datos.ubicacion,
-                datos.foto,
+                res[0].titulo,
+                res[0].descripcion,
+                res[0].ubicacion,
+                res[0].foto,
                 [],
-                datos.user_foto,
-                datos.likes,
-                datos.user_id,
-                datos.corLat,
-                datos.corLong)
-        }
-        console.log("estoy aqui");
+                res[0].user_foto,
+                res[0].likes,
+                res[0].user_id,
+                res[0].corLat,
+                res[0].corLong)
+                console.log("estoy aqui");
         console.log(excursion);
 
         // create days
@@ -56,6 +55,12 @@ function getDiasOfViaje(req, response) {
                 puntosDeInteres: [],
             });
         });
+        }
+        else {
+            answer = { error: true, codigo: 200, mensaje: err, data_viaje: [null] };
+        }
+            }
+            
         answer = { error: false, codigo: 200, mensaje: "Viaje encontrado", data_viaje: [excursion] }
         response.send(answer)
     })
