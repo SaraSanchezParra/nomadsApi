@@ -438,9 +438,11 @@ function removeLike(req, response) {
 }
 
 
-function viajeNo(req, res) {
+function viajeNo(req, response) {
     let params = [req.body.viaje_id]
+    console.log(req.body);
     let sql = "DELETE FROM `nomads`.`viajes` WHERE `viaje_id` = ?"
+    let answer;
     connection.query(sql, params, (err, res) => {
 
         if (err) {
