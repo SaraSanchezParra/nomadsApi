@@ -84,13 +84,13 @@ function postUserLoging(request, response) {
         console.log(
           "Los datos proporcionados no coinciden con ningún usuario en la base de datos."
         );
-        respuesta1 = {
+        respuesta = {
           error: true,
           codigo: 200,
           mensaje: "No logeado",
-          data_user: res,
+          data_user: res
         };
-        console.log(respuesta1);
+        console.log(respuesta);
       }
 
 
