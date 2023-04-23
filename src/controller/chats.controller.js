@@ -77,6 +77,7 @@ function postChat(request,response)
   let params=[request.body.user_id_creador,request.body.user_id_participante,request.body.hora]
   let sql=`INSERT INTO nomads.chats (user_id_creador, user_id_participante, hora)
   VALUES (?,?,?)`
+  console.log(request.body.hora)
   console.log(sql);
   connection.query(sql,params,(err,res)=>{
     if(err){
