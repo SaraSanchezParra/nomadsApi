@@ -252,9 +252,6 @@ function postDia(req, res) {
     });
 }
 
-function postPI(req, res) {
-
-}
 
 function viajeID(req, response) {
     let sql = "SELECT * FROM nomads.viajes WHERE viaje_id = (SELECT MAX(viaje_id) FROM nomads.viajes)"
@@ -281,6 +278,7 @@ function modViaje(req, response) {
     let sql = "UPDATE nomads.viajes SET titulo = COALESCE(?, titulo), descripcion = COALESCE(?, descripcion), ubicacion = COALESCE(?, ubicacion), foto = COALESCE(?, foto), n_dias_viaje = COALESCE(?, n_dias_viaje) WHERE (viaje_id = ?);";
     let answer;
     connection.query(sql, params, (err, res) => {
+        console.log(res);
         if (err) {
             answer = { error: true, code: 200, message: "wrong db connection", data: res };
             console.log(err);
@@ -458,7 +456,7 @@ function viajeNo(req, response) {
                 answer = { error: false, code: 200, message: String(res.affectedRows), data: res }
             }
             else {
-                answer = { error: true, codigo: 200, mensaje: 'No encontrado', data: null, userdata: null }
+                answer = { error: true, codigo: 200, mensaje: '0', data: null, userdata: null }
             }
         }
         response.send(answer)
@@ -466,6 +464,6 @@ function viajeNo(req, response) {
 
 }
 
-module.exports = { getTopViajes, getStartViajes, getDiasOfViaje, getTopViajesLog, getTopNomads, getPIOfDay, viajes, postViaje, addLike, removeLike, postDia, postPI, viajeID, modViaje, modPI, viajeNo }
+module.exports = { getTopViajes, getStartViajes, getDiasOfViaje, getTopViajesLog, getTopNomads, getPIOfDay, viajes, postViaje, addLike, removeLike, postDia, viajeID, modViaje, modPI, viajeNo }
 
 
