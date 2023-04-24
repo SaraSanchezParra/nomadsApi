@@ -626,16 +626,16 @@ function diaNo(req, response) {
       };
     } else {
       if (res.affectedRows === 1) {
-        // answer = {
-        //   error: false,
-        //   code: 200,
-        //   message: String(res.affectedRows),
-        //   data: res,
-        // };
+        answer = {
+          error: false,
+          code: 200,
+          message: String(res.affectedRows),
+          data: res,
+        };
+        response.send(answer)
         let sqlD = "SELECT n_dias_viaje FROM nomads.viajes WHERE viaje_id = ?;";
         let paramsD = [req.body.viaje_id];
-        const dia_id = result.insertId;
-        connection.query(sqlD, paramsD, (err, res) => {
+        connection.query(sqlD, paramsD, (err, resp) => {
           if (err) {
             console.error(err);
             answer = {
@@ -644,8 +644,9 @@ function diaNo(req, response) {
               mensaje: "Error al añadir punto de interés a la base de datos",
             };
           } else {
-            let delN = res.affectedRows
-            let nDays = res[0];
+            console.log("Days number:");
+            console.log(resp);
+            let nDays = resp[0];
             let sqlV =
               "UPDATE nomads.viajes SET n_dias_viaje = ? WHERE (viaje_id = ?);";
             let paramsV = [nDays - 1, req.body.viaje_id];
@@ -658,12 +659,7 @@ function diaNo(req, response) {
                   mensaje: "Error al añadir punto de interés a la base de datos",
                 };
               } else {
-                answer = {
-                    error: true,
-                    codigo: 500,
-                    mensaje: String(delN),
-                    data_dia: null
-                  };
+                console.log("Deleted biens");
               }
             });
           }
@@ -678,7 +674,6 @@ function diaNo(req, response) {
         };
       }
     }
-    response.send(answer);
   });
 }
 
