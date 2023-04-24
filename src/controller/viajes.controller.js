@@ -23,27 +23,29 @@ function getDiasOfViaje(req, response) {
     if (err) {
       answer = { error: true, codigo: 200, mensaje: err, data_viaje: [null] };
     } else {
-      if (res.length != 0) {
+      if (res.length != 0) 
+      {
+        
         //  create Viaje
 
         console.log(res);
 
-        let datos = res[0];
-        console.log("Over here");
-        console.log(datos);
-        excursion = new Viaje(
-          viaje_id,
-          res[0].titulo,
-          res[0].descripcion,
-          res[0].ubicacion,
-          res[0].foto,
-          [],
-          res[0].user_foto,
-          res[0].likes,
-          res[0].user_id,
-          res[0].corLat,
-          res[0].corLong
-        );
+            let datos = res[0]
+            console.log("Over here");
+            console.log(datos);
+            excursion = new Viaje(
+                viaje_id,
+                datos.titulo,
+                datos.descripcion,
+                datos.ubicacion,
+                datos.foto,
+                [],
+                datos.user_foto,
+                datos.likes,
+                datos.user_id,
+                datos.corLat,
+                datos.corLong)
+        
         console.log("estoy aqui");
         console.log(excursion);
 
@@ -545,46 +547,30 @@ function removeLike(req, response) {
   let deleteSql = `DELETE FROM nomads.favoritos WHERE user_id_fav=${req.body.user_id} AND viaje_id_fav=${req.body.viaje_id}`;
   console.log(deleteSql);
 
-  connection.query(deleteSql, (err, res) => {
-    if (err) {
-      console.log(err);
-      respuesta = {
-        error: true,
-        codigo: 200,
-        mensaje: "Error removing like",
-        data: null,
-        userdata: null,
-      };
-      response.send(respuesta);
-    } else {
-      let updateSql = `UPDATE nomads.viajes SET n_likes = n_likes - 1 WHERE viaje_id = ${req.body.viaje_id}`;
-      console.log(updateSql);
-      connection.query(updateSql, (err, res) => {
+    connection.query(deleteSql, (err, res) => {
         if (err) {
-          console.log(err);
-          respuesta = {
-            error: true,
-            codigo: 200,
-            mensaje: "Error removing like",
-            data: null,
-            userdata: null,
-          };
-          response.send(respuesta);
+            console.log(err);
+            respuesta = { error: true, codigo: 200, mensaje: 'Error removing like', data: null, userdata: null };
+            response.send(respuesta)
         } else {
-          respuesta = {
-            error: false,
-            codigo: 200,
-            mensaje: "Like removed",
-            data: null,
-            userdata: null,
-          };
-          console.log(respuesta);
-          response.send(respuesta);
+            let updateSql = `UPDATE nomads.viajes SET n_likes = n_likes - 1 WHERE viaje_id = ${req.body.viaje_id}`;
+            console.log(updateSql);
+            connection.query(updateSql, (err, res) => {
+                if (err) {
+                    console.log(err);
+                    respuesta = {error: true, codigo: 200, mensaje: 'Error removing like',data: null, userdata: null }
+                    response.send(respuesta)
+                }
+                else {
+                    respuesta = {error: false, codigo: 200, mensaje: 'Like removed',data: null, userdata: null }
+                    console.log(respuesta);
+                    response.send(respuesta)
+                }
+            }) 
         }
       });
     }
-  });
-}
+
 
 function viajeNo(req, response) {
   let params = [req.body.viaje_id];
