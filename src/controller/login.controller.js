@@ -3,7 +3,7 @@ const { User } = require("../models/user")
 const CryptoJS = require("crypto-js");
 
 function postUserLoging(request, response) {
-  // let respuesta;
+  let respuesta;
 
   console.log(request.body);
 
@@ -35,8 +35,9 @@ function postUserLoging(request, response) {
         mensaje: "No logueado",
         data_user: res,
       };
-    } else {
-      if (res.length > 0) {
+      console.log(respuesta);
+      response.send(respuesta);
+    } else if (res.length > 0) {
         // respuesta = {error:false, codigo:200, mensaje:'logueado', data_user:res}
         let user = new User(res[0].user_id, res[0].name, res[0].surname, res[0].email,
           res[0].username, res[0].descripcion, res[0].photo, [], []);
@@ -45,12 +46,13 @@ function postUserLoging(request, response) {
         connection.query(sql2, params, (err, resViajes) => {
           if (err) {
             console.log(err);
-            respuesta1 = {
+            respuesta = {
               error: true,
               codigo: 200,
               mensaje: "viaje no encontrado",
               data: resViajes,
             };
+            response.send(respuesta);
           } else {
             user.misViajes = resViajes;
             console.log(resViajes)
@@ -58,7 +60,7 @@ function postUserLoging(request, response) {
             connection.query(sql3, params, (err, resFavoritos) => {
               if (err) {
                 console.log(err);
-                respuesta1 = {
+                respuesta = {
                   error: true,
                   codigo: 200,
                   mensaje: "no hay favoritos",
@@ -67,15 +69,16 @@ function postUserLoging(request, response) {
               } else {
                 user.favs = resFavoritos
 
-                let respuesta = {
+                 respuesta = {
                   error: false,
                   codigo: 200,
                   mensaje: "logeado",
                   data_user: user,
                 };
 
-                response.send(respuesta);
               }
+              console.log(respuesta);
+              response.send(respuesta);
             });
 
           }
@@ -87,14 +90,14 @@ function postUserLoging(request, response) {
         respuesta = {
           error: true,
           codigo: 200,
-          mensaje: "No logeado",
+          mensaje: "No logueado",
           data_user: res
         };
+
         console.log(respuesta);
+        response.send(respuesta);
+        
       }
-
-
-    }
   });
 }
 
