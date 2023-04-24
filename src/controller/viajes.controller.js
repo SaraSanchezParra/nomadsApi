@@ -32,7 +32,7 @@ function getDiasOfViaje(req, response) {
             console.log("Over here");
             console.log(datos);
             excursion = new Viaje(
-                viaje_id,
+                Number(viaje_id),
                 datos.titulo,
                 datos.descripcion,
                 datos.ubicacion,
@@ -428,7 +428,7 @@ function removeLike(req, response) {
                     response.send(respuesta)
                 }
                 else {
-                    respuesta = {error: false, codigo: 200, mensaje: 'Like removed',data: null, userdata: null }
+                    respuesta = {error: false, codigo: 200, mensaje: 'Like eliminado',data: null, userdata: null }
                     console.log(respuesta);
                     response.send(respuesta)
                 }
