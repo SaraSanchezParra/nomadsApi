@@ -33,4 +33,6 @@ router.put("/modPI", viajesCTRL.modPI)
 
 router.delete("/viajeNo", viajesCTRL.viajeNo)
 
+router.delete("diaNo", viajesCTRL.diaNo)
+
 module.exports = router

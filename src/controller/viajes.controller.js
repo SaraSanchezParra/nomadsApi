@@ -191,6 +191,7 @@ function postViaje(req, response) {
 async function getCoordenadas(punto, insert_id, pIndex, len) {
     let corLong;
     let corLat;
+    let answer;
     console.log(punto.nombre);
     const url = `https://photon.komoot.io/api/?q=${punto.nombre}`
     let params = {
@@ -216,7 +217,7 @@ async function getCoordenadas(punto, insert_id, pIndex, len) {
             answer = ({ error: true, codigo: 500, mensaje: 'Error al añadir punto de interés a la base de datos' });
         } else {
             if (result.insertId) {
-                insert_ids.push(result.insertId)
+                console.log(insert_id);
             }
             else {
                 answer = ({ error: true, codigo: 201, mensaje: "-1", data: { id: result.insertId } });
@@ -235,7 +236,7 @@ function postDia(req, res) {
     connection.query(sql, values, (err, result) => {
         if (err) {
             console.error(err);
-            res.status(500).json({ error: true, codigo: 500, mensaje: '0', data: null });
+            res.status(500).json({ error: true0, codigo: 500, mensaje: '0', data: null });
         } else {
             const dia_id = result.insertId;
             req.body.puntosDeInteres.forEach((punto,index) => {
@@ -464,6 +465,28 @@ function viajeNo(req, response) {
 
 }
 
-module.exports = { getTopViajes, getStartViajes, getDiasOfViaje, getTopViajesLog, getTopNomads, getPIOfDay, viajes, postViaje, addLike, removeLike, postDia, viajeID, modViaje, modPI, viajeNo }
+function diaNo(req, response){
+    let params = [req.body.dia_id]
+    console.log(req.body);
+    let sql ="DELETE FROM `nomads`.`dias` WHERE `dia_id` = ?";
+    let answer;
+    connection.query(sql, params, (err, res) => {
+
+        if (err) {
+            console.log(err);
+            answer = { error: true, codigo: 200, mensaje: 'No encontrado', data: null, userdata: null }
+        } else {
+            if (res.affectedRows === 1) {
+                answer = { error: false, code: 200, message: String(res.affectedRows), data: res }
+            }
+            else {
+                answer = { error: true, codigo: 200, mensaje: '0', data: null, userdata: null }
+            }
+        }
+        response.send(answer)
+    })
+}
+
+module.exports = { getTopViajes, getStartViajes, getDiasOfViaje, getTopViajesLog, getTopNomads, getPIOfDay, viajes, postViaje, addLike, removeLike, postDia, viajeID, modViaje, modPI, viajeNo, diaNo }
 
 
