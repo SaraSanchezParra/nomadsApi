@@ -112,7 +112,7 @@ function getTopViajes(request, response) {
     //   respuesta = result;
     // }
     // response.send(respuesta);
-    response.send({message: "Hola lola"})
+    response.send({resultado: result});
   });
 }
 
