@@ -1,4 +1,4 @@
-const connection = require("../database");
+const {connection} = require("../database");
 const { User } = require("../models/user")
 const CryptoJS = require("crypto-js");
 

@@ -1,5 +1,5 @@
 const { User } = require("../models/user");
-const connection = require("../database");
+const {connection} = require("../database");
 
 
 
