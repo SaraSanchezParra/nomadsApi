@@ -1,5 +1,5 @@
-const connection = require("src/database");
 const { User } = require("../models/user");
+const connection = require("../database");
 
 
 
