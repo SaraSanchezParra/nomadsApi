@@ -290,7 +290,7 @@ function postDia(req, response) {
           console.log(err);
         }
         else {
-          answer = {error: false, codigo: 200, mensaje: String(affectedRows), data_dia: null}
+          answer = {error: false, codigo: 200, mensaje: "1", data_dia: null}
         }
         response.send(answer)
       })
@@ -609,7 +609,7 @@ function diaNo(req, response) {
             answer = {
           error: false,
           code: 200,
-          message: String(res.affectedRows),
+          message: "1",
           data: res,
         };
           }
