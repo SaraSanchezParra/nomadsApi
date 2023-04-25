@@ -1,6 +1,5 @@
 const Viaje = require("../models/viaje");
-const connection = require("../database");
-const { response } = require("express");
+const connection = require("/src/database");
 
 function getStartViajes(req, res) {
   let answer = {
