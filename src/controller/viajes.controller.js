@@ -177,7 +177,7 @@ function postViaje(req, response) {
         "', '" +
         req.body.n_dias_viaje +
         "', '" +
-        length(req.body.days) +
+        req.body.days +
         "', '" +
         corLong +
         "', '" +
