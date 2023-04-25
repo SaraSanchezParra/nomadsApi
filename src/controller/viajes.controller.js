@@ -97,23 +97,22 @@ function getTopViajes(request, response) {
         GROUP BY viajes.viaje_id
         ORDER BY n_likes DESC LIMIT 3`;
 
-//   connection.query(sql, function (err, result) {
-//     if (err) {
-//       console.log(err);
-//       respuesta = {
-//         error: true,
-//         codigo: 200,
-//         mensaje: "No encontrado",
-//         data: null,
-//         userdata: null,
-//       };
-//     } else {
-//       console.log(result);
-//       respuesta = result;
-//     }
-//     response.send(respuesta);
-//   });
-    response.send({message: "HOLAA LOLA"})
+  connection.query(sql, function (err, result) {
+    if (err) {
+      console.log(err);
+      respuesta = {
+        error: true,
+        codigo: 200,
+        mensaje: "No encontrado",
+        data: null,
+        userdata: null,
+      };
+    } else {
+      console.log(result);
+      respuesta = result;
+    }
+    response.send(respuesta);
+  });
 }
 
 function getTopViajesLog(request, response) {
