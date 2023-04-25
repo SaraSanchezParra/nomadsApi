@@ -6,7 +6,7 @@ function getStartViajes(req, res) {
         error: false,
         codigo: 200,
         mensaje: "Starting Point",
-        data_viaje: null,
+        data_viaje: [null],
     };
 
     res.send(answer);
