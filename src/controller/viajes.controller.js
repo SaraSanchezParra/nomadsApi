@@ -1,5 +1,6 @@
 const Viaje = require("../models/viaje");
 const connection = require("../database");
+const { response } = require("express");
 
 function getStartViajes(req, res) {
   let answer = {
@@ -177,7 +178,7 @@ function postViaje(req, response) {
         "', '" +
         req.body.n_dias_viaje +
         "', '" +
-        0 +
+        length(req.body.days) +
         "', '" +
         corLong +
         "', '" +
@@ -271,7 +272,7 @@ async function getCoordenadas(punto, insert_id, pIndex, len) {
   });
 }
 
-function postDia(req, res) {
+function postDia(req, response) {
   const sql = "INSERT INTO nomads.dias (nombre, viaje_id) VALUES (?, ?)";
   const values = [req.body.nombre, req.body.viaje_id];
   console.log(req.body);
@@ -282,45 +283,18 @@ function postDia(req, res) {
         .status(500)
         .json({ error: true0, codigo: 500, mensaje: "0", data: null });
     } else {
-      let sqlD = "SELECT n_dias_viaje FROM nomads.viajes WHERE viaje_id = ?;";
+      let sqlD = "UPDATE nomads.viajes SET n_dias_viaje = n_dias_viaje + 1 WHERE viaje_id = ?";
       let paramsD = [req.body.viaje_id];
-      const dia_id = result.insertId;
       connection.query(sqlD, paramsD, (err, res) => {
         if (err) {
-          console.error(err);
-          answer = {
-            error: true,
-            codigo: 500,
-            mensaje: "Error al añadir punto de interés a la base de datos",
-          };
-        } else {
-          let nDays = res[0];
-          let sqlV =
-            "UPDATE nomads.viajes SET n_dias_viaje = ? WHERE (viaje_id = ?);";
-          let paramsV = [nDays + 1, req.body.viaje_id];
-          connection.query(sqlV, paramsV, (err, res) => {
-            if (err) {
-              console.error(err);
-              answer = {
-                error: true,
-                codigo: 500,
-                mensaje: "Error al añadir punto de interés a la base de datos",
-              };
-            } else {
-              req.body.puntosDeInteres.forEach((punto, index) => {
-                getCoordenadas(
-                  punto,
-                  dia_id,
-                  index,
-                  req.body.puntosDeInteres.length
-                ).then((result) => {
-                  console.log(result);
-                });
-              });
-            }
-          });
+          console.log("Error");
+          console.log(err);
         }
-      });
+        else {
+          answer = {error: false, codigo: 200, mensaje: String(affectedRows), data_dia: null}
+        }
+        response.send(answer)
+      })
     }
   });
 }
@@ -626,48 +600,21 @@ function diaNo(req, response) {
       };
     } else {
       if (res.affectedRows === 1) {
-        // answer = {
-        //   error: false,
-        //   code: 200,
-        //   message: String(res.affectedRows),
-        //   data: res,
-        // };
-        let sqlD = "SELECT n_dias_viaje FROM nomads.viajes WHERE viaje_id = ?;";
-        let paramsD = [req.body.viaje_id];
-        const dia_id = result.insertId;
-        connection.query(sqlD, paramsD, (err, res) => {
+        
+        let sql2= `UPDATE nomads.viajes SET n_dias_viaje = n_dias_viaje - 1 WHERE viaje_id = ${params[0]}`
+        connection.query(sql2, (err, res) => {
           if (err) {
-            console.error(err);
-            answer = {
-              error: true,
-              codigo: 500,
-              mensaje: "Error al añadir punto de interés a la base de datos",
-            };
-          } else {
-            let delN = res.affectedRows
-            let nDays = res[0];
-            let sqlV =
-              "UPDATE nomads.viajes SET n_dias_viaje = ? WHERE (viaje_id = ?);";
-            let paramsV = [nDays - 1, req.body.viaje_id];
-            connection.query(sqlV, paramsV, (err, res) => {
-              if (err) {
-                console.error(err);
-                answer = {
-                  error: true,
-                  codigo: 500,
-                  mensaje: "Error al añadir punto de interés a la base de datos",
-                };
-              } else {
-                answer = {
-                    error: true,
-                    codigo: 500,
-                    mensaje: String(delN),
-                    data_dia: null
-                  };
-              }
-            });
+            console.log("Error");
           }
-        });
+          else {
+            answer = {
+          error: false,
+          code: 200,
+          message: String(res.affectedRows),
+          data: res,
+        };
+          }
+        })
       } else {
         answer = {
           error: true,
@@ -679,6 +626,7 @@ function diaNo(req, response) {
       }
     }
     response.send(answer);
+    console.log(answer);
   });
 }
 
