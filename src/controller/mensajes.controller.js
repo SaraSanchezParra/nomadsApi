@@ -1,5 +1,5 @@
 
-const connection = require("src/database");
+const connection = require("../database");
 
 
 // en mensajes controller hacer función getMessages: chat_id

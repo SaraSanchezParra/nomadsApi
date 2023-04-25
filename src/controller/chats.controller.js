@@ -1,5 +1,5 @@
 
-const connection = require("src/database");
+const connection = require("../database");
 
 function getChats(request,response){
   
