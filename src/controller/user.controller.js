@@ -1,4 +1,4 @@
-const connection = require("../database");
+const connection = require("src/database");
 const { User } = require("../models/user");
 
 
