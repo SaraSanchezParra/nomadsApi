@@ -24,7 +24,7 @@ router.post("/viaje", viajesCTRL.addLike);
 router.delete("/viaje", viajesCTRL.removeLike);
 
 router.post("/addDia", viajesCTRL.postDia);
-
+ 
 router.put("/viaje", viajesCTRL.modViaje)
 
 router.get("/addViaje", viajesCTRL.viajeID)
@@ -33,6 +33,6 @@ router.put("/modPI", viajesCTRL.modPI)
 
 router.delete("/viajeNo", viajesCTRL.viajeNo)
 
-router.delete("diaNo", viajesCTRL.diaNo)
+router.delete("/diaNo", viajesCTRL.diaNo)
 
 module.exports = router
