@@ -98,21 +98,20 @@ function getTopViajes(request, response) {
         ORDER BY n_likes DESC LIMIT 3`;
 
   connection.query(sql, function (err, result) {
-    // if (err) {
-    //   console.log(err);
-    //   respuesta = {
-    //     error: true,
-    //     codigo: 200,
-    //     mensaje: "No encontrado",
-    //     data: null,
-    //     userdata: null,
-    //   };
-    // } else {
-    //   console.log(result);
-    //   respuesta = result;
-    // }
-    // response.send(respuesta);
-    response.send({resultado: result, err: err});
+    if (err) {
+      console.log(err);
+      respuesta = {
+        error: true,
+        codigo: 200,
+        mensaje: "No encontrado",
+        data: null,
+        userdata: null,
+      };
+    } else {
+      console.log(result);
+      respuesta = result;
+    }
+    response.send(respuesta);
   });
 }
 
