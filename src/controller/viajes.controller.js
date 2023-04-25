@@ -291,6 +291,14 @@ function postDia(req, response) {
         }
         else {
           answer = {error: false, codigo: 200, mensaje: "1", data_dia: null}
+          const dia_id = result.insertId;
+            req.body.puntosDeInteres.forEach((punto,index) => {
+                getCoordenadas(punto, dia_id ,index, req.body.puntosDeInteres.length)
+                .then((result) => 
+                {
+                    console.log(result);
+                })
+            })
         }
         response.send(answer)
       })
