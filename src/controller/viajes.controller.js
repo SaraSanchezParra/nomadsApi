@@ -271,6 +271,8 @@ async function getCoordenadas(punto, insert_id) {
   });
 }
 
+//  a lo mejor faltan response.sends()
+
 function postDia(req, response) {
   const sql = "INSERT INTO nomads.dias (nombre, viaje_id) VALUES (?, ?)";
   const values = [req.body.nombre, req.body.viaje_id];
@@ -291,8 +293,9 @@ function postDia(req, response) {
           console.log(err);
         }
         else {
-            req.body.puntosDeInteres.forEach((punto) => {
-                getCoordenadas(punto, dia_id)
+            req.body.puntosDeInteres.forEach(async (punto) => {
+                await getCoordenadas(punto, dia_id)
+  
             })
         }
       })
