@@ -146,7 +146,7 @@ function postViaje(req, response) {
   // n_dias falta
   let corLong;
   let corLat;
-  const url = `https://photon.komoot.io/api/?q=${req.body.nombre}`;
+  const url = `https://photon.komoot.io/api/?q=${req.body.ubicacion}, Spain`;
   let params = {
     protocol: "https:",
     headers: { "Content-type": "application/json; charset = UTF-8" },
@@ -158,8 +158,8 @@ function postViaje(req, response) {
       return data.json();
     })
     .then(function (result) {
-      corLat = result.features[0].geometry.coordinates[0];
-      corLong = result.features[0].geometry.coordinates[1];
+      corLong = result.features[0].geometry.coordinates[0];
+      corLat = result.features[0].geometry.coordinates[1];
       console.log(corLat);
       console.log(corLong);
       let sql =
@@ -228,7 +228,7 @@ async function getCoordenadas(punto, insert_id) {
   let corLat;
   let answer;
   console.log(punto.nombre);
-  const url = `https://photon.komoot.io/api/?q=${punto.nombre}`;
+  const url = `https://photon.komoot.io/api/?q=${punto.nombre}, Spain`;
   let params = {
     protocol: "https:",
     headers: { "Content-type": "application/json; charset = UTF-8" },
@@ -290,8 +290,10 @@ function postDia(req, response) {
         if (err) {
           console.log("Error");
           console.log(err);
+          answer = ({ error: true, codigo: 500, mensaje: "0", data: null });
         }
         else {
+          answer = ({ error: false, codigo: 500, mensaje: "2", data: null });
           console.log("Antes de Foreach");
           console.log(res);
             req.body.puntosDeInteres.forEach(async (punto) => {
