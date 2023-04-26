@@ -223,7 +223,7 @@ function postViaje(req, response) {
 
 // añadir día y punto interés
 
-async function getCoordenadas(punto, insert_id, pIndex, len) {
+async function getCoordenadas(punto, insert_id) {
   let corLong;
   let corLat;
   let answer;
@@ -282,25 +282,21 @@ function postDia(req, response) {
         .status(500)
         .json({ error: true0, codigo: 500, mensaje: "0", data: null });
     } else {
-      answer = {error: false, codigo: 200, mensaje: "1", data_dia: null}
       let sqlD = "UPDATE nomads.viajes SET n_dias_viaje = n_dias_viaje + 1 WHERE viaje_id = ?";
       let paramsD = [req.body.viaje_id];
+      const dia_id = result.insertId;
       connection.query(sqlD, paramsD, (err, res) => {
         if (err) {
           console.log("Error");
           console.log(err);
         }
         else {
-          const dia_id = result.insertId;
-            req.body.puntosDeInteres.forEach((punto,index) => {
-                getCoordenadas(punto, dia_id ,index, req.body.puntosDeInteres.length)
-                .then((result) => 
-                {
-                    console.log(result);
-                })
+            req.body.puntosDeInteres.forEach((punto) => {
+                getCoordenadas(punto, dia_id)
             })
         }
       })
+      answer = {error: false, codigo: 200, mensaje: "1", data_dia: null}
     }
     response.send(answer)
   });
