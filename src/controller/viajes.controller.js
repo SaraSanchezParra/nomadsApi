@@ -287,12 +287,14 @@ function postDia(req, response) {
       let sqlD = "UPDATE nomads.viajes SET n_dias_viaje = n_dias_viaje + 1 WHERE viaje_id = ?";
       let paramsD = [req.body.viaje_id];
       const dia_id = result.insertId;
+      console.log("antes de Update");
       connection.query(sqlD, paramsD, (err, res) => {
         if (err) {
           console.log("Error");
           console.log(err);
         }
         else {
+          console.log("Antes de Foreach");
             req.body.puntosDeInteres.forEach(async (punto) => {
               console.log("Entrando el el Foreach");
                 await getCoordenadas(punto, dia_id)
