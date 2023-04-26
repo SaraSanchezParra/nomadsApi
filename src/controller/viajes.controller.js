@@ -280,9 +280,7 @@ function postDia(req, response) {
   connection.query(sql, values, (err, result) => {
     if (err) {
       console.error(err);
-      res
-        .status(500)
-        .json({ error: true, codigo: 500, mensaje: "0", data: null });
+      answer = ({ error: true, codigo: 500, mensaje: "0", data: null });
     } else {
       let sqlD = "UPDATE nomads.viajes SET n_dias_viaje = n_dias_viaje + 1 WHERE viaje_id = ?";
       let paramsD = [req.body.viaje_id];
