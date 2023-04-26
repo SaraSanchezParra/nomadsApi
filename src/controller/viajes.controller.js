@@ -8,7 +8,7 @@ function getStartViajes(req, res) {
     mensaje: "Starting Point",
     data_viaje: null,
   };
-
+ 
   res.send(answer);
 }
 
