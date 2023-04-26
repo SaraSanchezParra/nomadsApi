@@ -293,6 +293,7 @@ function postDia(req, response) {
         }
         else {
           console.log("Antes de Foreach");
+          console.log(res);
             req.body.puntosDeInteres.forEach(async (punto) => {
               console.log("Entrando el el Foreach");
                 await getCoordenadas(punto, dia_id)
